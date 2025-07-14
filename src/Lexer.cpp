@@ -299,7 +299,7 @@ void Lexer::number() {
       while (std::isdigit(peek())) advance();
     }
 
-    addTokens(Token::Type::NUMBER, m_src.substr(m_start, m_current));
+    addTokens(Token::Type::NUMBER, m_src.substr(m_start, m_current - m_start));
 }
 
 bool Lexer::isDigit(char c) {
