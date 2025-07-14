@@ -219,6 +219,18 @@ void Lexer::scanToken() {
                 advance();
             }
         }
+        else if (match('*')) {
+            while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
+                advance();
+            }
+            if (isAtEnd()) {
+                Errors::errors(m_line, "Multi-line comment not closed.");
+                return;
+            }
+            // consume both '*' and '/'
+            advance();
+            advance();
+        }
         else {
             addToken(Token::Type::BACK_SLASH);
         }
