@@ -306,7 +306,7 @@ bool Lexer::isDigit(char c) {
     return c >= '0' && c <= '9';
 }
 
-bool Lexer::peekNext() {
+char Lexer::peekNext() {
     if (m_current + 1 >= m_src.length()) return '\0';
     return m_src.at(m_current + 1);
 }

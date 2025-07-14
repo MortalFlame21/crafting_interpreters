@@ -115,7 +115,7 @@ private:
     void string();
     void number();
     bool isDigit(char c);
-    bool peekNext();
+    char peekNext();
     bool isAlpha(char c);
     void identifier();
     bool isAlnum(char c);
