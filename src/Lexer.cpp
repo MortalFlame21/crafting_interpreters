@@ -188,7 +188,7 @@ void Lexer::scanToken() {
     case '{':
         addToken(Token::Type::LEFT_BRACE); break;
     case '}':
-        addToken(Token::Type::RIGHT_PAREN); break;
+        addToken(Token::Type::RIGHT_BRACE); break;
     case ',':
         addToken(Token::Type::COMMA); break;
     case '.':
