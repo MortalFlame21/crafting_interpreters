@@ -15,6 +15,8 @@ public:
 template<typename T>
 class Expression {
 public:
+    Expression() = default;
+    virtual ~Expression();
 	virtual T accept(Visitor<T>& visitor);
 };
 

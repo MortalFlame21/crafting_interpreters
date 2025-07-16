@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 
 #include "Expression.h"
 
@@ -21,4 +22,16 @@ public:
 	std::string visitUnary() override {
         return "AstPrinter::visitUnary";
     };
+private:
+    std::string parenthesize(
+        std::string_view name,
+        std::vector<Expression<std::string>> expressions
+    ) {
+        std::stringstream ss{};
+        ss << "(" << name;
+        for (auto& expr : expressions)
+            ss << " " << expr.accept(*this);
+        ss << ")";
+        return ss.str();
+    }
 };
