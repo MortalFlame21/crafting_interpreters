@@ -221,6 +221,7 @@ void Lexer::scanToken() {
         }
         else if (match('*')) {
             while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
+                if (peek() == '\n') ++m_line;
                 advance();
             }
             if (isAtEnd()) {
@@ -240,7 +241,7 @@ void Lexer::scanToken() {
     case '\t':
         break;
     case '\n':
-        m_line++; break;
+        ++m_line; break;
     case '"':
         string(); break;
     default:
