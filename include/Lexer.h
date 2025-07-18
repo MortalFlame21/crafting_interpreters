@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <string_view>
+#include <any>
 
 using namespace std::string_view_literals;
 
@@ -69,8 +70,7 @@ public:
 private:
     Type m_type{};
     std::string m_lexeme{};
-    // fix
-    std::string m_literal{};
+    std::any m_literal{};
     std::size_t m_line{};
 };
 

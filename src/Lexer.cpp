@@ -150,7 +150,7 @@ std::ostream& operator<<(std::ostream& out, Token::Type t) {
 std::string Token::str() {
     std::stringstream ss{};
     ss << "<[type]: " << m_type << ", [lexeme]: " << m_lexeme
-        << ", [literal]: " << m_literal << ">";
+        << ", [literal]: " << std::any_cast<std::string_view>(m_literal) << ">";
     return ss.str();
 }
 
