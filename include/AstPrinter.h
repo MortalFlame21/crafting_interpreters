@@ -1,36 +1,39 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <sstream>
 
 #include "Expression.h"
 
-class AstPrinter : public Visitor<std::string> {
+using namespace std::string_view_literals;
+
+class AstPrinter : public Visitor {
 public:
-    std::string print() {
-        return "AstPrinter::print";
+    std::string_view print() {
+        return "AstPrinter::print"sv;
     }
 
-	std::string visitBinary() override {
-        return "AstPrinter::visitBinary";
+	std::any visitBinary() override {
+        return "AstPrinter::visitBinary"sv;
     };
 
-	std::string visitGrouping() override {
-        return "AstPrinter::visitBinary";
+	std::any visitGrouping() override {
+        return "AstPrinter::visitBinary"sv;
     };
 
-	std::string visitUnary() override {
-        return "AstPrinter::visitUnary";
+	std::any visitUnary() override {
+        return "AstPrinter::visitUnary"sv;
     };
 private:
     std::string parenthesize(
         std::string_view name,
-        std::vector<Expression<std::string>> expressions
+        std::vector<Expression> expressions
     ) {
         std::stringstream ss{};
         ss << "(" << name;
         for (auto& expr : expressions)
-            ss << " " << expr.accept(*this);
+            ss << " " << std::any_cast<std::string_view>(expr.accept(*this));
         ss << ")";
         return ss.str();
     }
