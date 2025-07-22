@@ -21,7 +21,7 @@ public:
 	virtual std::any accept(Visitor& visitor);
 };
 
-class Binary {
+class Binary : public Expression {
 public:
     Binary(Expression left, Expression right, Token operator_)
         : m_left{ std::make_unique<Expression>(left) }
@@ -38,7 +38,7 @@ private:
     Token m_operator;
 };
 
-class Grouping {
+class Grouping : public Expression {
 public:
     Grouping(Expression expression)
         : m_expression{ std::make_unique<Expression>(expression) }
@@ -51,7 +51,7 @@ private:
     std::unique_ptr<Expression> m_expression;
 };
 
-class Unary {
+class Unary : public Expression {
 public:
     Unary(Expression right, Token operator_)
         : m_right{ std::make_unique<Expression>(right) }
