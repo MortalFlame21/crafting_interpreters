@@ -8,10 +8,11 @@
 class Visitor {
 public:
     Visitor() = default;
-    virtual ~Visitor();
-	virtual std::any visitBinary() = 0;
-	virtual std::any visitGrouping() = 0;
-	virtual std::any visitUnary() = 0;
+    virtual ~Visitor() { };
+	virtual std::any visitBinary(const Binary& binary) = 0;
+	virtual std::any visitGrouping(const Grouping& grouping) = 0;
+	virtual std::any visitLiteral(const Literal& literal) = 0;
+	virtual std::any visitUnary(const Unary& unary) = 0;
 };
 
 class Expression {
@@ -19,7 +20,7 @@ public:
     Expression() = default;
     virtual ~Expression() { };
 
-    virtual std::any accept(Visitor& visitor) { return visitor.visitBinary(); };
+    virtual std::any accept(Visitor& visitor) { return "Expression::accept"; };
 };
 
 class Binary : public Expression {
@@ -34,8 +35,10 @@ public:
         , m_operator{ operator_ }
     { }
 
+    virtual ~Binary() { };
+
     std::any accept(Visitor& visitor) override {
-        return visitor.visitBinary();
+        return visitor.visitBinary(*this);
     }
 private:
     std::unique_ptr<Expression> m_left;
@@ -49,8 +52,10 @@ public:
         : m_expression{ std::move(expression) }
     { }
 
+    virtual ~Grouping() { };
+
     std::any accept(Visitor& visitor) override {
-        return visitor.visitGrouping();
+        return visitor.visitGrouping(*this);
     }
 private:
     std::unique_ptr<Expression> m_expression;
@@ -60,8 +65,10 @@ class Literal : public Expression {
 public:
     Literal(std::any value) : m_value { value } {}
 
+    virtual ~Literal() { };
+
     std::any accept(Visitor& visitor) override {
-        return visitor.visitGrouping();
+        return visitor.visitLiteral(*this);
     }
 private:
     std::any m_value;
@@ -74,8 +81,10 @@ public:
         , m_operator{ operator_ }
     { }
 
+    virtual ~Unary() { };
+
     std::any accept(Visitor& visitor) override {
-        return visitor.visitUnary();
+        return visitor.visitUnary(*this);
     }
 private:
     std::unique_ptr<Expression> m_right;
