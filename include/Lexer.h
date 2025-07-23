@@ -67,6 +67,13 @@ public:
         std::size_t line);
 
     std::string str();
+
+    friend class Expression;
+    friend class Binary;
+    friend class Grouping;
+    friend class Literal;
+    friend class Unary;
+    friend class AstPrinter;
 private:
     Type m_type{};
     std::string m_lexeme{};
