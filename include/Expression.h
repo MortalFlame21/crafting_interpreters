@@ -5,6 +5,11 @@
 
 #include "Lexer.h"
 
+class Binary;
+class Grouping;
+class Literal;
+class Unary;
+
 class Visitor {
 public:
     Visitor() = default;
@@ -20,7 +25,11 @@ public:
     Expression() = default;
     virtual ~Expression() { };
 
-    virtual std::any accept(Visitor& visitor) { return "Expression::accept"; };
+    virtual std::any accept([[maybe_unused]] Visitor& visitor) {
+        return "Expression::accept";
+    };
+
+    friend class AstPrinter;
 };
 
 class Binary : public Expression {
@@ -40,6 +49,8 @@ public:
     std::any accept(Visitor& visitor) override {
         return visitor.visitBinary(*this);
     }
+
+    friend class AstPrinter;
 private:
     std::unique_ptr<Expression> m_left;
     std::unique_ptr<Expression> m_right;
@@ -57,6 +68,8 @@ public:
     std::any accept(Visitor& visitor) override {
         return visitor.visitGrouping(*this);
     }
+
+    friend class AstPrinter;
 private:
     std::unique_ptr<Expression> m_expression;
 };
@@ -70,6 +83,8 @@ public:
     std::any accept(Visitor& visitor) override {
         return visitor.visitLiteral(*this);
     }
+
+    friend class AstPrinter;
 private:
     std::any m_value;
 };
@@ -86,6 +101,8 @@ public:
     std::any accept(Visitor& visitor) override {
         return visitor.visitUnary(*this);
     }
+
+    friend class AstPrinter;
 private:
     std::unique_ptr<Expression> m_right;
     Token m_operator;
