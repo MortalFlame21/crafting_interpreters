@@ -74,6 +74,7 @@ public:
     friend class Literal;
     friend class Unary;
     friend class AstPrinter;
+    friend class Parser;
 private:
     Type m_type{};
     std::string m_lexeme{};
