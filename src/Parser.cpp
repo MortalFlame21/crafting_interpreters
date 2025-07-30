@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <iostream>
 
 #include "Lexer.h"
 #include "Expression.h"
@@ -148,6 +149,8 @@ std::unique_ptr<Expression> Parser::primary() {
         consume(Token::Type::RIGHT_PAREN, "Expect ')' after <expression>.");
         return std::make_unique<Grouping>(std::move(expr));
     }
+
+    throw error(peek(), "Expect expression.");
 }
 
 Token Parser::consume(Token::Type type, const std::string& msg) {
@@ -158,4 +161,40 @@ Token Parser::consume(Token::Type type, const std::string& msg) {
 Parser::ParseError Parser::error(Token token, const std::string& msg) {
     Errors::errors(token, msg);
     return ParseError(msg);
+}
+
+std::unique_ptr<Expression> Parser::parse() {
+    try {
+        return expression();
+    }
+    catch (ParseError& e) {
+        return nullptr;
+    }
+    catch (...) {
+        std::cout << "Unexpected error occurred.\n";
+        return nullptr;
+    }
+}
+
+void Parser::synchronise() {
+    advance();
+
+    while (!isAtEnd()) {
+        if (previous().m_type == Token::Type::SEMICOLON)
+            return;
+
+        switch (peek().m_type) {
+            case Token::Type::CLASS:
+            case Token::Type::FUN:
+            case Token::Type::VAR:
+            case Token::Type::FOR:
+            case Token::Type::IF:
+            case Token::Type::WHILE:
+            case Token::Type::PRINT:
+            case Token::Type::RETURN:
+                return;
+        }
+
+        advance();
+    }
 }

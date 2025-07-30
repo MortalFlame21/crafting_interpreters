@@ -26,6 +26,8 @@ primary     -> <NUMBER> | <STRING>
 class Parser {
 public:
     Parser(std::vector<Token> tokens);
+
+    std::unique_ptr<Expression> parse();
 private:
     class ParseError : public std::runtime_error {
         ParseError(const std::string& error)
@@ -50,6 +52,7 @@ private:
     // std::runtime_error.
     Token consume(Token::Type type, const std::string& msg);
     ParseError error(Token token, const std::string& msg);
+    void synchronise();
 
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};
