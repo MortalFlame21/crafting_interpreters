@@ -10,30 +10,31 @@
 Parser::Parser(std::vector<Token> tokens)
     : m_tokens{ tokens } { }
 
-Expression& Parser::expression() {
+std::unique_ptr<Expression> Parser::expression() {
     return equality();
 }
 
-Expression& Parser::equality() {
-    auto& expr { comparison() };
+std::unique_ptr<Expression> Parser::equality() {
+    auto expr { std::move(comparison()) };
 
     while (match({
         Token::Type::EXCLAIM_EQUAL,
         Token::Type::EQUAL_EQUAL
     })) {
         auto operator_ { previous() };
-        auto right { comparison() };
-        expr = Binary (
-            std::make_unique<Expression>(expr),
-            std::make_unique<Expression>(right),
-            operator_
+        auto right { std::move(comparison()) };
+
+        expr = std::make_unique<Binary> (
+            expr, right, operator_
         );
     };
 
     return expr;
 }
 
-// one of the tokes must match with at least one, OR.
+// one of the tokens must match with at least one, OR.
+// would love to implement this using variadic functions
+// one day...
 bool Parser::match(std::vector<Token::Type> types) {
     for (auto& t : types) {
         if (check(t)) {
@@ -42,32 +43,6 @@ bool Parser::match(std::vector<Token::Type> types) {
         }
     }
     return false;
-}
-
-Expression& Parser::comparison() {
-    auto& expr { term() };
-
-    while (match({
-        Token::Type::GREATER,
-        Token::Type::GREATER_EQUAL,
-        Token::Type::LESS,
-        Token::Type::LESS_EQUAL
-    })) {
-        auto operator_ { previous() };
-        auto right { term() };
-
-        expr = Binary (
-            std::make_unique<Expression>(expr),
-            std::make_unique<Expression>(right),
-            operator_
-        );
-    }
-
-    return expr;
-}
-
-Token Parser::previous() {
-    return Token(Token::Type::AND, "", "", 1);
 }
 
 bool Parser::check(Token::Type t) {
@@ -92,94 +67,81 @@ Token Parser::previous() {
     return m_tokens.at(m_current - 1);
 }
 
-Expression& Parser::term() {
-    auto& expr { factor() };
+std::unique_ptr<Expression> Parser::comparison() {
+    auto expr { std::move(term()) };
+
+    while (match({
+        Token::Type::GREATER,
+        Token::Type::GREATER_EQUAL,
+        Token::Type::LESS,
+        Token::Type::LESS_EQUAL
+    })) {
+        auto operator_ { previous() };
+        auto right { std::move(term()) };
+
+        expr = std::make_unique<Binary>(expr, right, operator_);
+    }
+
+    return expr;
+}
+
+std::unique_ptr<Expression> Parser::term() {
+    auto expr { std::move(factor()) };
 
     while(match({
         Token::Type::MINUS,
         Token::Type::PLUS,
     })) {
         auto operator_ { previous() };
-        auto right { factor() };
+        auto right { std::move(factor()) };
 
-        expr = Binary (
-            std::make_unique<Expression>(expr),
-            std::make_unique<Expression>(right),
-            operator_
-        );
+        expr = std::make_unique<Binary>(expr, right, operator_);
     }
 
     return expr;
 }
 
-Expression& Parser::factor() {
-    auto& expr { factor() };
-
-    while(match({
-        Token::Type::MINUS,
-        Token::Type::PLUS,
-    })) {
-        auto operator_ { previous() };
-        auto right { factor() };
-
-        expr = Binary (
-            std::make_unique<Expression>(expr),
-            std::make_unique<Expression>(right),
-            operator_
-        );
-    }
-
-    return expr;
-}
-
-Expression& Parser::term() {
-    auto& expr { unary() };
+std::unique_ptr<Expression> Parser::factor() {
+    auto expr { std::move(unary()) };
 
     while(match({
         Token::Type::BACK_SLASH,
         Token::Type::ASTERISK,
     })) {
         auto operator_ { previous() };
-        auto right { unary() };
+        auto right { std::move(unary()) };
 
-        expr = Binary (
-            std::make_unique<Expression>(expr),
-            std::make_unique<Expression>(right),
-            operator_
-        );
+        expr = std::make_unique<Binary> (expr, right, operator_);
     }
 
     return expr;
 }
 
-Expression& Parser::unary() {
+std::unique_ptr<Expression> Parser::unary() {
     if (match({
         Token::Type::EXCLAIM,
         Token::Type::MINUS
     })) {
         auto operator_ { previous() };
-        auto right { unary() };
-        return Unary (
-            std::make_unique<Expression>(right),
-            operator_
-        );
+        auto right { std::move(unary()) };
+
+        return std::make_unique<Unary>(right, operator_);
     }
 
     return primary();
 }
 
-Expression& Parser::primary() {
-    if (match({ Token::Type::FALSE })) return Literal(false);
-    if (match({ Token::Type::TRUE })) return Literal(true);
-    if (match({ Token::Type::NIL })) return Literal(nullptr);
+std::unique_ptr<Expression> Parser::primary() {
+    if (match({ Token::Type::FALSE })) return std::make_unique<Literal>(false);
+    if (match({ Token::Type::TRUE })) return std::make_unique<Literal>(true);
+    if (match({ Token::Type::NIL })) return std::make_unique<Literal>(nullptr);
 
-    if (match({ Token::Type::STRING, Token::Type::NUMBER }))
-        return Literal(previous().m_literal);
+    if (match({ Token::Type::NUMBER, Token::Type::STRING }))
+        return std::make_unique<Literal>(previous().m_literal);
 
     if (match({ Token::Type::LEFT_PAREN })) {
-        auto& expr { expression() };
+        auto expr { std::move(expression()) };
         consume(Token::Type::RIGHT_PAREN, "Expect ')' after <expression>.");
-        return Grouping(expr)
+        return std::make_unique<Grouping>(expr);
     }
-
 }

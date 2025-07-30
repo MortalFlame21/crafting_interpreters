@@ -17,6 +17,7 @@ primary     -> <NUMBER> | <STRING>
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Lexer.h"
 #include "Expression.h"
@@ -24,19 +25,19 @@ primary     -> <NUMBER> | <STRING>
 class Parser {
 public:
     Parser(std::vector<Token> tokens);
-    Expression& expression();
-    Expression& equality();
+    std::unique_ptr<Expression> expression();
+    std::unique_ptr<Expression> equality();
     bool match(std::vector<Token::Type> types);
-    Expression& comparison();
     bool check(Token::Type t);
     Token advance();
     bool isAtEnd();
     Token peek();
     Token previous();
-    Expression& term();
-    Expression& factor();
-    Expression& unary();
-    Expression& primary();
+    std::unique_ptr<Expression> comparison();
+    std::unique_ptr<Expression> term();
+    std::unique_ptr<Expression> factor();
+    std::unique_ptr<Expression> unary();
+    std::unique_ptr<Expression> primary();
 private:
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};
