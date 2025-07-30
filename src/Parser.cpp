@@ -156,7 +156,6 @@ Token Parser::consume(Token::Type type, const std::string& msg) {
 }
 
 Parser::ParseError Parser::error(Token token, const std::string& msg) {
-    // change to Error::errors(Token, std::string_view)
-    Errors::errors(token.m_line, msg);
+    Errors::errors(token, msg);
     return ParseError(msg);
 }
