@@ -16,8 +16,9 @@ primary     -> <NUMBER> | <STRING>
 */
 
 #include <string>
-#include <vector>
+#include <string_view>
 #include <memory>
+#include <stdexcept>
 
 #include "Lexer.h"
 #include "Expression.h"
@@ -25,6 +26,13 @@ primary     -> <NUMBER> | <STRING>
 class Parser {
 public:
     Parser(std::vector<Token> tokens);
+private:
+    class ParseError : public std::runtime_error {
+        ParseError(const std::string& error)
+            : std::runtime_error{ error } { };
+        friend class Parser;
+    };
+
     std::unique_ptr<Expression> expression();
     std::unique_ptr<Expression> equality();
     bool match(std::vector<Token::Type> types);
@@ -38,7 +46,11 @@ public:
     std::unique_ptr<Expression> factor();
     std::unique_ptr<Expression> unary();
     std::unique_ptr<Expression> primary();
-private:
+    // using const std::string& to follow inheritance of
+    // std::runtime_error.
+    Token consume(Token::Type type, const std::string& msg);
+    ParseError error(Token token, const std::string& msg);
+
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};
 };

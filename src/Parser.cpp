@@ -4,7 +4,9 @@
 
 #include "Lexer.h"
 #include "Expression.h"
+#include "Errors.h"
 
+#include "Lox.h"
 #include "Parser.h"
 
 Parser::Parser(std::vector<Token> tokens)
@@ -15,17 +17,17 @@ std::unique_ptr<Expression> Parser::expression() {
 }
 
 std::unique_ptr<Expression> Parser::equality() {
-    auto expr { std::move(comparison()) };
+    auto expr { comparison() };
 
     while (match({
         Token::Type::EXCLAIM_EQUAL,
         Token::Type::EQUAL_EQUAL
     })) {
         auto operator_ { previous() };
-        auto right { std::move(comparison()) };
+        auto right { comparison() };
 
         expr = std::make_unique<Binary> (
-            expr, right, operator_
+            std::move(expr), std::move(right), operator_
         );
     };
 
@@ -68,7 +70,7 @@ Token Parser::previous() {
 }
 
 std::unique_ptr<Expression> Parser::comparison() {
-    auto expr { std::move(term()) };
+    auto expr { term() };
 
     while (match({
         Token::Type::GREATER,
@@ -77,41 +79,43 @@ std::unique_ptr<Expression> Parser::comparison() {
         Token::Type::LESS_EQUAL
     })) {
         auto operator_ { previous() };
-        auto right { std::move(term()) };
+        auto right { term() };
 
-        expr = std::make_unique<Binary>(expr, right, operator_);
+        expr = std::make_unique<Binary>(
+            std::move(expr), std::move(right), operator_
+        );
     }
 
     return expr;
 }
 
 std::unique_ptr<Expression> Parser::term() {
-    auto expr { std::move(factor()) };
+    auto expr { factor() };
 
     while(match({
         Token::Type::MINUS,
         Token::Type::PLUS,
     })) {
         auto operator_ { previous() };
-        auto right { std::move(factor()) };
+        auto right { factor() };
 
-        expr = std::make_unique<Binary>(expr, right, operator_);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(right), operator_);
     }
 
     return expr;
 }
 
 std::unique_ptr<Expression> Parser::factor() {
-    auto expr { std::move(unary()) };
+    auto expr { unary() };
 
     while(match({
         Token::Type::BACK_SLASH,
         Token::Type::ASTERISK,
     })) {
         auto operator_ { previous() };
-        auto right { std::move(unary()) };
+        auto right { unary() };
 
-        expr = std::make_unique<Binary> (expr, right, operator_);
+        expr = std::make_unique<Binary> (std::move(expr), std::move(right), operator_);
     }
 
     return expr;
@@ -123,9 +127,9 @@ std::unique_ptr<Expression> Parser::unary() {
         Token::Type::MINUS
     })) {
         auto operator_ { previous() };
-        auto right { std::move(unary()) };
+        auto right { unary() };
 
-        return std::make_unique<Unary>(right, operator_);
+        return std::make_unique<Unary>(std::move(right), operator_);
     }
 
     return primary();
@@ -140,8 +144,19 @@ std::unique_ptr<Expression> Parser::primary() {
         return std::make_unique<Literal>(previous().m_literal);
 
     if (match({ Token::Type::LEFT_PAREN })) {
-        auto expr { std::move(expression()) };
+        auto expr { expression() };
         consume(Token::Type::RIGHT_PAREN, "Expect ')' after <expression>.");
-        return std::make_unique<Grouping>(expr);
+        return std::make_unique<Grouping>(std::move(expr));
     }
+}
+
+Token Parser::consume(Token::Type type, const std::string& msg) {
+    if (check(type)) return advance();
+    throw error(peek(), msg);
+}
+
+Parser::ParseError Parser::error(Token token, const std::string& msg) {
+    // change to Error::errors(Token, std::string_view)
+    Errors::errors(token.m_line, msg);
+    return ParseError(msg);
 }
