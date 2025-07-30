@@ -10,8 +10,8 @@ using namespace std::string_view_literals;
 
 class AstPrinter : public Visitor {
 public:
-    std::string print(Expression& expr) {
-        return std::any_cast<std::string>(expr.accept(*this));
+    std::string print(Expression* expr) {
+        return std::any_cast<std::string>(expr->accept(*this));
     }
 
 	std::any visitBinary(const Binary& binary) override {
@@ -32,7 +32,7 @@ public:
 	std::any visitLiteral(const Literal& literal) override {
         if (!literal.m_value.has_value()) return std::string("null");
         // fix this std::any conversion hard asf
-        return std::string("std::");
+        return std::string("std::any");
     };
 
 	std::any visitUnary(const Unary& unary) override {

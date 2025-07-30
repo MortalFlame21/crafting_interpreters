@@ -193,6 +193,8 @@ void Parser::synchronise() {
             case Token::Type::PRINT:
             case Token::Type::RETURN:
                 return;
+            default:
+                return;
         }
 
         advance();

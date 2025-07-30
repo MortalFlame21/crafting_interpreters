@@ -5,6 +5,8 @@
 #include <sstream>
 
 #include "Lexer.h"
+#include "Parser.h"
+#include "AstPrinter.h"
 
 void Lox::runFile(const std::string& file) {
     std::ifstream ifs { file };
@@ -34,5 +36,17 @@ void Lox::runPrompt() {
 
 void Lox::run(std::string_view src) {
     Lexer lex { src };
-    lex.scanTokens();
+    auto tokens { lex.scanTokens() };
+
+    Parser parser { tokens };
+    auto expr { parser.parse() };
+
+    if (hadError) {
+        return;
+    }
+
+    AstPrinter printer {};
+    std::cout << "*** Start printer details ***\n\n";
+    std::cout << printer.print(expr.get());
+    std::cout << "\n*** End printer details ***";
 }
