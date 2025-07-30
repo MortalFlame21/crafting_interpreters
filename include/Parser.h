@@ -4,9 +4,14 @@
 the grammar
 
 expression  -> <equality>;
-equality    -> <comparision> != | == <comparision>
-comparision ->
-
+equality    -> <comparision> != | == <comparision>;
+comparision -> <term> > | >= | < | <= <term>;
+term        -> <factor> - | + <factor>;
+factor      -> <unary> / | * <unary>;
+unary       -> (! | -) <unary> | <primary>;
+primary     -> <NUMBER> | <STRING>
+               | "true" | "false" | "nil"
+               | "(" <expression> ")";
 
 */
 
@@ -28,6 +33,10 @@ public:
     bool isAtEnd();
     Token peek();
     Token previous();
+    Expression& term();
+    Expression& factor();
+    Expression& unary();
+    Expression& primary();
 private:
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};
