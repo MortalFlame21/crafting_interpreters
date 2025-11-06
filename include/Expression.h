@@ -30,6 +30,7 @@ public:
     };
 
     friend class AstPrinter;
+    friend class Interpreter;
 };
 
 class Binary : public Expression {
@@ -51,6 +52,7 @@ public:
     }
 
     friend class AstPrinter;
+    friend class Interpreter;
 private:
     std::unique_ptr<Expression> m_left;
     std::unique_ptr<Expression> m_right;
@@ -70,6 +72,7 @@ public:
     }
 
     friend class AstPrinter;
+    friend class Interpreter;
 private:
     std::unique_ptr<Expression> m_expression;
 };
@@ -85,6 +88,7 @@ public:
     }
 
     friend class AstPrinter;
+    friend class Interpreter;
 private:
     std::any m_value;
 };
@@ -103,6 +107,7 @@ public:
     }
 
     friend class AstPrinter;
+    friend class Interpreter;
 private:
     std::unique_ptr<Expression> m_right;
     Token m_operator;
