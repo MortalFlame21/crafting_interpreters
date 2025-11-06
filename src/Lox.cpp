@@ -46,7 +46,7 @@ void Lox::run(std::string_view src) {
     }
 
     AstPrinter printer {};
-    std::cout << "*** Start printer details ***\n\n";
+    std::cout << "*** Start printer details ***\n";
     std::cout << printer.print(expr.get());
-    std::cout << "\n*** End printer details ***";
+    std::cout << "\n*** End printer details ***\n";
 }
