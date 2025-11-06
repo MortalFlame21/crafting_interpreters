@@ -29,6 +29,8 @@ public:
         try {
             // might need to fix probably does not cast properly
             switch (unary.m_operator.m_type) {
+                case Token::Type::EXCLAIM:
+                    return !isTruthy(right);
                 case Token::Type::MINUS:
                     return std::any_cast<double>(right);
             };
@@ -44,5 +46,11 @@ public:
 private:
     std::any evaluate(Expression* expression) {
         return expression->accept(*this);
+    }
+
+    bool isTruthy(std::any object) {
+       if (!object.has_value()) return false;
+       if (object.type() == typeid(bool)) return std::any_cast<bool>(object);
+       return true;
     }
 };
