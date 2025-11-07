@@ -75,6 +75,7 @@ std::any Interpreter::visitUnary(const Unary& unary) {
         case Token::Type::EXCLAIM:
             return !isTruthy(right);
         case Token::Type::MINUS:
+            checkNumberOperand(unary.m_operator, right);
             return std::any_cast<double>(right);
         };
     }
