@@ -46,7 +46,7 @@ std::any Interpreter::visitBinary(const Binary& binary) {
             if (left.type() == typeid(std::string) && right.type() == typeid(std::string))
                 return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
 
-            throw new InterpreterRuntimeError (
+            throw new RuntimeError (
                 binary.m_operator, "Operands must be two numbers or two strings"
             );
         }
@@ -119,7 +119,7 @@ bool Interpreter::isEqual(std::any left, std::any right) {
 void Interpreter::checkNumberOperand(Token operator_, std::any operand) {
     if (operand.type() == typeid(double))
         return;
-    throw new InterpreterRuntimeError(operator_, "Operand must be a number");
+    throw new RuntimeError(operator_, "Operand must be a number");
 }
 
 void Interpreter::checkNumberOperands (
@@ -127,7 +127,7 @@ void Interpreter::checkNumberOperands (
 ) {
     if (left.type() == typeid(double) && right.type() == typeid(double))
         return;
-    throw new InterpreterRuntimeError(operator_, "Operand must be numbers");
+    throw new RuntimeError(operator_, "Operand must be numbers");
 }
 
 void Interpreter::interpret(Expression* expression) {
@@ -135,7 +135,7 @@ void Interpreter::interpret(Expression* expression) {
         std::any value = evaluate(expression);
         std::cout << str(value);
     }
-    catch (InterpreterRuntimeError& e) {
+    catch (RuntimeError& e) {
         Lox::runtimeError(e);
     }
     catch (...) {

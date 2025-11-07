@@ -9,10 +9,10 @@
 
 class Interpreter : public Visitor {
 public:
-    class InterpreterRuntimeError : public std::runtime_error {
+    class RuntimeError : public std::runtime_error {
         Token m_token;
 
-        InterpreterRuntimeError(Token token, const std::string& error)
+        RuntimeError(Token token, const std::string& error)
             : std::runtime_error{ error }, m_token{ token } { };
 
         friend class Interpreter;
