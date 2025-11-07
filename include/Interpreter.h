@@ -85,6 +85,15 @@ public:
         return nullptr;
     }
 private:
+    class InterpreterRuntimeError : public std::runtime_error {
+        Token::Type m_token;
+
+        InterpreterRuntimeError(Token::Type token, const std::string& error)
+            : std::runtime_error{ error }, m_token{ token } { };
+
+        friend class Interpreter;
+    };
+
     std::any evaluate(Expression* expression) {
         return expression->accept(*this);
     }
@@ -107,5 +116,11 @@ private:
 
         std::cerr << "Error: What are we even comparing?\n";
         return false;
+    }
+
+    void checkNumberOperand(Token::Type operator_, std::any operand) {
+        if (operand.type() == typeid(double))
+            return;
+        throw new InterpreterRuntimeError(operator_, "Operand must be a number");
     }
 };
