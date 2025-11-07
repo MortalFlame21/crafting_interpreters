@@ -25,7 +25,9 @@ std::any Interpreter::visitBinary(const Binary& binary) {
             checkNumberOperands(binary.m_operator, left, right);
             return std::any_cast<double>(left) <= std::any_cast<double>(right);
         case Token::Type::EQUAL_EQUAL:
+            return isEqual(left, right);
         case Token::Type::EXCLAIM_EQUAL:
+            return !isEqual(left, right);
         // arithmetic
         case Token::Type::BACK_SLASH:
             checkNumberOperands(binary.m_operator, left, right);
