@@ -7,6 +7,7 @@
 #include "Lexer.h"
 #include "Parser.h"
 #include "AstPrinter.h"
+#include "Interpreter.h"
 
 void Lox::runFile(const std::string& file) {
     std::ifstream ifs { file };
@@ -18,6 +19,7 @@ void Lox::runFile(const std::string& file) {
 
     run(ss.str());
     if (hadError) std::exit(EXIT_FAILURE);
+    if (hadRuntimeError) std::exit(EXIT_FAILURE); // change to appropriate exit code.
 }
 
 void Lox::runPrompt() {
@@ -49,4 +51,9 @@ void Lox::run(std::string_view src) {
     std::cout << "*** Start printer details ***\n";
     std::cout << printer.print(expr.get());
     std::cout << "\n*** End printer details ***\n";
+}
+
+void Lox::runtimeError(Interpreter::RuntimeError& error) {
+    std::cout << error.what() << "\n [line " << error.m_token.m_line << "]\n";
+    hadRuntimeError = true;
 }
