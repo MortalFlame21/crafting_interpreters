@@ -9,13 +9,6 @@
 
 class Interpreter : public Visitor {
 public:
-	std::any visitBinary(const Binary& binary) override;
-	std::any visitGrouping(const Grouping& grouping) override;
-	std::any visitLiteral(const Literal& literal) override;
-	std::any visitUnary(const Unary& unary) override;
-    void interpret(Expression* expression);
-
-private:
     class InterpreterRuntimeError : public std::runtime_error {
         Token m_token;
 
@@ -23,8 +16,16 @@ private:
             : std::runtime_error{ error }, m_token{ token } { };
 
         friend class Interpreter;
+        friend class Lox;
     };
 
+	std::any visitBinary(const Binary& binary) override;
+	std::any visitGrouping(const Grouping& grouping) override;
+	std::any visitLiteral(const Literal& literal) override;
+	std::any visitUnary(const Unary& unary) override;
+    void interpret(Expression* expression);
+
+private:
     std::any evaluate(Expression* expression);
     bool isTruthy(std::any object);
     bool isEqual(std::any left, std::any right);
