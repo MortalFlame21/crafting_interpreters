@@ -3,6 +3,7 @@
 
 #include "Lexer.h"
 #include "Interpreter.h"
+#include "Lox.h"
 
 std::any Interpreter::visitBinary(const Binary& binary) {
     std::any left { evaluate(binary.m_left.get()) };

@@ -51,6 +51,9 @@ void Lox::run(std::string_view src) {
     std::cout << "*** Start printer details ***\n";
     std::cout << printer.print(expr.get());
     std::cout << "\n*** End printer details ***\n";
+
+    Interpreter interpreter {};
+    interpreter.interpret(expr.get());
 }
 
 void Lox::runtimeError(Interpreter::RuntimeError& error) {
