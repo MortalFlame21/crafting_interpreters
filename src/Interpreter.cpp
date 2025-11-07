@@ -46,7 +46,9 @@ std::any Interpreter::visitBinary(const Binary& binary) {
             if (left.type() == typeid(std::string) && right.type() == typeid(std::string))
                 return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
 
-            break;
+            throw new InterpreterRuntimeError (
+                binary.m_operator, "Operands must be two numbers or two strings"
+            );
         }
     }
     catch (const std::bad_any_cast& e)
