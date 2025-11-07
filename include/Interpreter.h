@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <memory>
+#include <stdexcept>
 #include <any>
 
 #include "Lexer.h"
@@ -16,9 +16,9 @@ public:
 
 private:
     class InterpreterRuntimeError : public std::runtime_error {
-        Token::Type m_token;
+        Token m_token;
 
-        InterpreterRuntimeError(Token::Type token, const std::string& error)
+        InterpreterRuntimeError(Token token, const std::string& error)
             : std::runtime_error{ error }, m_token{ token } { };
 
         friend class Interpreter;
@@ -27,5 +27,6 @@ private:
     std::any evaluate(Expression* expression);
     bool isTruthy(std::any object);
     bool isEqual(std::any left, std::any right);
-    void checkNumberOperand(Token::Type operator_, std::any operand);
+    void checkNumberOperand(Token operator_, std::any operand);
+    void checkNumberOperands(Token operator_, std::any left, std::any right);
 };

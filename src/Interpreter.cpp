@@ -1,3 +1,7 @@
+#include <iostream>
+#include <any>
+
+#include "Lexer.h"
 #include "Interpreter.h"
 
 std::any Interpreter::visitBinary(const Binary& binary) {
@@ -9,21 +13,28 @@ std::any Interpreter::visitBinary(const Binary& binary) {
         switch (binary.m_operator.m_type) {
         // comparision
         case Token::Type::GREATER:
+            checkNumberOperands(binary.m_operator, left, right);
             return std::any_cast<double>(left) > std::any_cast<double>(right);
         case Token::Type::GREATER_EQUAL:
+            checkNumberOperands(binary.m_operator, left, right);
             return std::any_cast<double>(left) >= std::any_cast<double>(right);
         case Token::Type::LESS:
+            checkNumberOperands(binary.m_operator, left, right);
             return std::any_cast<double>(left) < std::any_cast<double>(right);
         case Token::Type::LESS_EQUAL:
+            checkNumberOperands(binary.m_operator, left, right);
             return std::any_cast<double>(left) <= std::any_cast<double>(right);
         case Token::Type::EQUAL_EQUAL:
         case Token::Type::EXCLAIM_EQUAL:
         // arithmetic
         case Token::Type::BACK_SLASH:
+            checkNumberOperands(binary.m_operator, left, right);
             return std::any_cast<double>(left) / std::any_cast<double>(right);
         case Token::Type::ASTERISK:
+            checkNumberOperands(binary.m_operator, left, right);
             return std::any_cast<double>(left) * std::any_cast<double>(right);
         case Token::Type::MINUS:
+            checkNumberOperands(binary.m_operator, left, right);
             return std::any_cast<double>(left) - std::any_cast<double>(right);
         case Token::Type::PLUS:
             // both support adding and string concatenation
@@ -100,8 +111,16 @@ bool Interpreter::isEqual(std::any left, std::any right) {
     return false;
 }
 
-void Interpreter::checkNumberOperand(Token::Type operator_, std::any operand) {
+void Interpreter::checkNumberOperand(Token operator_, std::any operand) {
     if (operand.type() == typeid(double))
         return;
     throw new InterpreterRuntimeError(operator_, "Operand must be a number");
+}
+
+void Interpreter::checkNumberOperands (
+    Token operator_, std::any left, std::any right
+) {
+    if (left.type() == typeid(double) && right.type() == typeid(double))
+        return;
+    throw new InterpreterRuntimeError(operator_, "Operand must be numbers");
 }
