@@ -13,6 +13,7 @@ public:
 	std::any visitGrouping(const Grouping& grouping) override;
 	std::any visitLiteral(const Literal& literal) override;
 	std::any visitUnary(const Unary& unary) override;
+    void interpret(Expression* expression);
 
 private:
     class InterpreterRuntimeError : public std::runtime_error {
@@ -29,4 +30,5 @@ private:
     bool isEqual(std::any left, std::any right);
     void checkNumberOperand(Token operator_, std::any operand);
     void checkNumberOperands(Token operator_, std::any left, std::any right);
+    std::string str(std::any object);
 };

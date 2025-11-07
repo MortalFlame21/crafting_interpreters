@@ -129,3 +129,36 @@ void Interpreter::checkNumberOperands (
         return;
     throw new InterpreterRuntimeError(operator_, "Operand must be numbers");
 }
+
+void Interpreter::interpret(Expression* expression) {
+    try {
+        std::any value = evaluate(expression);
+        std::cout << str(value);
+    }
+    catch (InterpreterRuntimeError& e) {
+        Lox::runtimeError(e);
+    }
+    catch (...) {
+        std::cout << "Unexpected error occurred.\n";
+    }
+}
+
+std::string Interpreter::str(std::any object) {
+    if (!object.has_value())
+        return "nil";
+
+    if (object.type() == typeid(double)) {
+        // could clean up if std::to_string no decimal places for a integer
+        // double. but idk.
+        auto double_str { std::to_string(std::any_cast<double>(object)) };
+
+        // ends with ".0"? remove the decimal place.
+        if (double_str.substr(double_str.size() - 2, 2) == ".0")
+           double_str = double_str.substr(0, double_str.size() - 2);
+
+        return double_str;
+    }
+
+    // most likely a string??
+    return std::any_cast<std::string>(object);
+}
