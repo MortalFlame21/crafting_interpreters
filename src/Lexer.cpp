@@ -150,8 +150,19 @@ std::ostream& operator<<(std::ostream& out, Token::Type t) {
 std::string Token::str() {
     std::stringstream ss{};
     ss << "<[type]: " << m_type << ", [lexeme]: " << m_lexeme
-        << ", [literal]: " << std::any_cast<std::string_view>(m_literal) << ">";
+        << ", [literal]: " << anyToString() << ">";
     return ss.str();
+}
+
+std::string Token::anyToString() {
+    if (!m_literal.has_value())
+        return "null";
+    else if (m_literal.type() == typeid(double))
+        return std::to_string(std::any_cast<double>(m_literal));
+    else if (m_literal.type() == typeid(std::string))
+        return std::any_cast<std::string>(m_literal);
+    else
+        return "unknown";
 }
 
 Lexer::Lexer(std::string_view src)
@@ -165,7 +176,7 @@ std::vector<Token> Lexer::scanTokens() {
         scanToken();
     }
 
-    m_tokens.push_back({ Token::Type::EOF_TOKEN, "", "", m_line });
+    m_tokens.push_back({ Token::Type::EOF_TOKEN, "", {}, m_line });
 
     for (auto& t : m_tokens) {
         std::cout << t.str() << "\n";
@@ -263,7 +274,7 @@ char Lexer::advance() {
 }
 
 void Lexer::addToken(Token::Type type) {
-    addToken(type, nullptr);
+    addToken(type, {});
 }
 
 void Lexer::addToken(Token::Type type, std::any literal) {

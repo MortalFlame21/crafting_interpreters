@@ -72,6 +72,8 @@ public:
     std::string m_lexeme{};
     std::any m_literal{};
     std::size_t m_line{};
+private:
+    std::string anyToString();
 };
 
 class Lexer {
