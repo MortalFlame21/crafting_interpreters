@@ -150,17 +150,17 @@ std::ostream& operator<<(std::ostream& out, Token::Type t) {
 std::string Token::str() {
     std::stringstream ss{};
     ss << "<[type]: " << m_type << ", [lexeme]: " << m_lexeme
-        << ", [literal]: " << anyToString() << ">";
+        << ", [literal]: " << anyToString(m_literal) << ">";
     return ss.str();
 }
 
-std::string Token::anyToString() {
-    if (!m_literal.has_value())
+std::string Token::anyToString(std::any& anyLiteral) {
+    if (!anyLiteral.has_value())
         return "null";
-    else if (m_literal.type() == typeid(double))
-        return std::to_string(std::any_cast<double>(m_literal));
-    else if (m_literal.type() == typeid(std::string))
-        return std::any_cast<std::string>(m_literal);
+    else if (anyLiteral.type() == typeid(double))
+        return std::to_string(std::any_cast<double>(anyLiteral));
+    else if (anyLiteral.type() == typeid(std::string))
+        return std::any_cast<std::string>(anyLiteral);
     else
         return "unknown";
 }
