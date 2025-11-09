@@ -67,13 +67,12 @@ public:
         std::size_t line);
 
     std::string str();
+    static std::string anyToString(const std::any& anyLiteral);
 
     Type m_type{};
     std::string m_lexeme{};
     std::any m_literal{};
     std::size_t m_line{};
-private:
-    static std::string anyToString(std::any& anyLiteral);
 };
 
 class Lexer {

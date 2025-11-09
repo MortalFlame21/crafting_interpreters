@@ -154,7 +154,7 @@ std::string Token::str() {
     return ss.str();
 }
 
-std::string Token::anyToString(std::any& anyLiteral) {
+std::string Token::anyToString(const std::any& anyLiteral) {
     if (!anyLiteral.has_value())
         return "null";
     else if (anyLiteral.type() == typeid(double))
