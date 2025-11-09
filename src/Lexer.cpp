@@ -263,10 +263,10 @@ char Lexer::advance() {
 }
 
 void Lexer::addToken(Token::Type type) {
-    addTokens(type, "");
+    addToken(type, nullptr);
 }
 
-void Lexer::addTokens(Token::Type type, std::string_view literal) {
+void Lexer::addToken(Token::Type type, std::any literal) {
     std::string lexeme { m_src.substr(m_start, m_current - m_start) };
     m_tokens.push_back({ type, lexeme, literal, m_line });
 }
@@ -298,7 +298,7 @@ void Lexer::string() {
     advance();
 
     std::string strType { m_src.substr(m_start + 1, m_current - m_start - 2) };
-    addTokens(Token::Type::STRING, strType);
+    addToken(Token::Type::STRING, strType);
 }
 
 void Lexer::number() {
@@ -312,7 +312,7 @@ void Lexer::number() {
       while (std::isdigit(peek())) advance();
     }
 
-    addTokens(Token::Type::NUMBER, m_src.substr(m_start, m_current - m_start));
+    addToken(Token::Type::NUMBER, m_src.substr(m_start, m_current - m_start));
 }
 
 bool Lexer::isDigit(char c) {
