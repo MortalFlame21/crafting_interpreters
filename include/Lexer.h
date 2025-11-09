@@ -73,6 +73,7 @@ public:
     std::any m_literal{};
     std::size_t m_line{};
 private:
+    // might need to turn to helper function instead?
     std::string anyToString();
 };
 
