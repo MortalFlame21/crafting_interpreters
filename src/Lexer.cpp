@@ -297,8 +297,8 @@ void Lexer::string() {
     // consume ending quotation, '"'.
     advance();
 
-    std::string strType { m_src.substr(m_start + 1, m_current - m_start - 2) };
-    addToken(Token::Type::STRING, strType);
+    auto str { m_src.substr(m_start + 1, m_current - m_start - 2) };
+    addToken(Token::Type::STRING, str);
 }
 
 void Lexer::number() {
@@ -312,7 +312,8 @@ void Lexer::number() {
       while (std::isdigit(peek())) advance();
     }
 
-    addToken(Token::Type::NUMBER, m_src.substr(m_start, m_current - m_start));
+    auto doubleStr { m_src.substr(m_start, m_current - m_start) };
+    addToken(Token::Type::NUMBER, std::stod(doubleStr));
 }
 
 bool Lexer::isDigit(char c) {
