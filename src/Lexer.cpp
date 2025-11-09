@@ -6,7 +6,7 @@
 #include "Lexer.h"
 #include "Errors.h"
 
-Token::Token(Type type, std::string_view lexeme, std::string_view literal,
+Token::Token(Type type, std::string_view lexeme, std::any literal,
         std::size_t line)
     : m_type { type }
     , m_lexeme { lexeme }
