@@ -6,7 +6,7 @@
 #include "Lexer.h"
 #include "Errors.h"
 
-Token::Token(Type type, std::string_view lexeme, std::string_view literal,
+Token::Token(Type type, std::string_view lexeme, std::any literal,
         std::size_t line)
     : m_type { type }
     , m_lexeme { lexeme }
@@ -150,8 +150,19 @@ std::ostream& operator<<(std::ostream& out, Token::Type t) {
 std::string Token::str() {
     std::stringstream ss{};
     ss << "<[type]: " << m_type << ", [lexeme]: " << m_lexeme
-        << ", [literal]: " << std::any_cast<std::string_view>(m_literal) << ">";
+        << ", [literal]: " << anyToString(m_literal) << ">";
     return ss.str();
+}
+
+std::string Token::anyToString(const std::any& anyLiteral) {
+    if (!anyLiteral.has_value())
+        return "null";
+    else if (anyLiteral.type() == typeid(double))
+        return std::to_string(std::any_cast<double>(anyLiteral));
+    else if (anyLiteral.type() == typeid(std::string))
+        return std::any_cast<std::string>(anyLiteral);
+    else
+        return "unknown";
 }
 
 Lexer::Lexer(std::string_view src)
@@ -165,7 +176,7 @@ std::vector<Token> Lexer::scanTokens() {
         scanToken();
     }
 
-    m_tokens.push_back({ Token::Type::EOF_TOKEN, "", "", m_line });
+    m_tokens.push_back({ Token::Type::EOF_TOKEN, "", {}, m_line });
 
     for (auto& t : m_tokens) {
         std::cout << t.str() << "\n";
@@ -263,10 +274,10 @@ char Lexer::advance() {
 }
 
 void Lexer::addToken(Token::Type type) {
-    addTokens(type, "");
+    addToken(type, {});
 }
 
-void Lexer::addTokens(Token::Type type, std::string_view literal) {
+void Lexer::addToken(Token::Type type, std::any literal) {
     std::string lexeme { m_src.substr(m_start, m_current - m_start) };
     m_tokens.push_back({ type, lexeme, literal, m_line });
 }
@@ -297,8 +308,8 @@ void Lexer::string() {
     // consume ending quotation, '"'.
     advance();
 
-    std::string strType { m_src.substr(m_start + 1, m_current - m_start - 2) };
-    addTokens(Token::Type::STRING, strType);
+    auto str { m_src.substr(m_start + 1, m_current - m_start - 2) };
+    addToken(Token::Type::STRING, str);
 }
 
 void Lexer::number() {
@@ -312,7 +323,8 @@ void Lexer::number() {
       while (std::isdigit(peek())) advance();
     }
 
-    addTokens(Token::Type::NUMBER, m_src.substr(m_start, m_current - m_start));
+    auto doubleStr { m_src.substr(m_start, m_current - m_start) };
+    addToken(Token::Type::NUMBER, std::stod(doubleStr));
 }
 
 bool Lexer::isDigit(char c) {

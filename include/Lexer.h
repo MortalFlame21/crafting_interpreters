@@ -63,10 +63,11 @@ public:
         UNKNOWN_TOKEN_TYPE = MAX_TOKEN_TYPE,
     };
 
-    Token(Type type, std::string_view lexeme, std::string_view literal,
+    Token(Type type, std::string_view lexeme, std::any literal,
         std::size_t line);
 
     std::string str();
+    static std::string anyToString(const std::any& anyLiteral);
 
     Type m_type{};
     std::string m_lexeme{};
@@ -109,7 +110,7 @@ private:
     void scanToken();
     char advance();
     void addToken(Token::Type tokenType);
-    void addTokens(Token::Type tokenType, std::string_view literal);
+    void addToken(Token::Type tokenType, std::any literal);
     bool match(char expectedToken);
     char peek();
     void string();

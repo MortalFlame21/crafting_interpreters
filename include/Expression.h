@@ -14,6 +14,7 @@ class Visitor {
 public:
     Visitor() = default;
     virtual ~Visitor() { };
+    // do I need std::any here or std::string is enough?
 	virtual std::any visitBinary(const Binary& binary) = 0;
 	virtual std::any visitGrouping(const Grouping& grouping) = 0;
 	virtual std::any visitLiteral(const Literal& literal) = 0;
@@ -25,11 +26,10 @@ public:
     Expression() = default;
     virtual ~Expression() { };
 
-    virtual std::any accept([[maybe_unused]] Visitor& visitor) {
-        return "Expression::accept";
-    };
+    virtual std::any accept(Visitor& visitor) = 0;
 
     friend class AstPrinter;
+    friend class Interpreter;
 };
 
 class Binary : public Expression {
@@ -51,6 +51,7 @@ public:
     }
 
     friend class AstPrinter;
+    friend class Interpreter;
 private:
     std::unique_ptr<Expression> m_left;
     std::unique_ptr<Expression> m_right;
@@ -70,6 +71,7 @@ public:
     }
 
     friend class AstPrinter;
+    friend class Interpreter;
 private:
     std::unique_ptr<Expression> m_expression;
 };
@@ -85,6 +87,7 @@ public:
     }
 
     friend class AstPrinter;
+    friend class Interpreter;
 private:
     std::any m_value;
 };
@@ -103,6 +106,7 @@ public:
     }
 
     friend class AstPrinter;
+    friend class Interpreter;
 private:
     std::unique_ptr<Expression> m_right;
     Token m_operator;

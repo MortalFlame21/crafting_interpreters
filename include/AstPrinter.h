@@ -28,11 +28,8 @@ public:
         );
     };
 
-    // will return std::string for now...
 	std::any visitLiteral(const Literal& literal) override {
-        if (!literal.m_value.has_value()) return std::string("null");
-        // fix this std::any conversion hard asf
-        return std::string("std::any");
+        return Token::anyToString(literal.m_value);
     };
 
 	std::any visitUnary(const Unary& unary) override {
