@@ -134,7 +134,7 @@ void Interpreter::checkNumberOperands (
 void Interpreter::interpret(Expression* expression) {
     try {
         std::any value = evaluate(expression);
-        std::cout << str(value);
+        std::cout << str(value) << "\n";
     }
     catch (RuntimeError& e) {
         Lox::runtimeError(e);
@@ -158,6 +158,9 @@ std::string Interpreter::str(std::any object) {
            double_str = double_str.substr(0, double_str.size() - 2);
 
         return double_str;
+    }
+    else if (object.type() == typeid(bool)) {
+        return std::any_cast<bool>(object) ? "true" : "false";
     }
 
     // most likely a string??
