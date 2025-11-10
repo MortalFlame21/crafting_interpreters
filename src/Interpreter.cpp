@@ -149,13 +149,11 @@ std::string Interpreter::str(std::any object) {
         return "nil";
 
     if (object.type() == typeid(double)) {
-        // could clean up if std::to_string no decimal places for a integer
-        // double. but idk.
         auto double_str { std::to_string(std::any_cast<double>(object)) };
 
-        // ends with ".0"? remove the decimal place.
-        if (double_str.substr(double_str.size() - 2, 2) == ".0")
-           double_str = double_str.substr(0, double_str.size() - 2);
+        // ends with ".000000"? remove the decimal place -- (std::setprecision is default to 6 decimals)
+        if (double_str.substr(double_str.size() - 7, 7) == ".000000")
+           double_str = double_str.substr(0, double_str.size() - 7);
 
         return double_str;
     }
