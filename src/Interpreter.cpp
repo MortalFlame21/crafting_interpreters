@@ -32,6 +32,8 @@ std::any Interpreter::visitBinary(const Binary& binary) {
         // arithmetic
         case Token::Type::BACK_SLASH:
             checkNumberOperands(binary.m_operator, left, right);
+            if (std::abs(std::any_cast<double>(right)) == 0.0)
+                throw RuntimeError (binary.m_operator, "Right operand. Divide by zero");
             return std::any_cast<double>(left) / std::any_cast<double>(right);
         case Token::Type::ASTERISK:
             checkNumberOperands(binary.m_operator, left, right);
@@ -46,6 +48,8 @@ std::any Interpreter::visitBinary(const Binary& binary) {
 
             if (left.type() == typeid(std::string) && right.type() == typeid(std::string))
                 return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
+
+            // optional concatenate string and number.
 
             throw new RuntimeError (
                 binary.m_operator, "Operands must be two numbers or two strings"
