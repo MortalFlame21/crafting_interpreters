@@ -57,6 +57,6 @@ void Lox::run(std::string_view src) {
 }
 
 void Lox::runtimeError(Interpreter::RuntimeError& error) {
-    std::cout << error.what() << "\n [line " << error.m_token.m_line << "]\n";
+    std::cout << error.what() << "\n\t[line " << error.m_token.m_line << "]\n";
     hadRuntimeError = true;
 }

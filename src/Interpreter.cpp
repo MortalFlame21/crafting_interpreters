@@ -113,14 +113,14 @@ bool Interpreter::isEqual(std::any left, std::any right) {
     if (left.type() == typeid(std::string) && right.type() == typeid(std::string))
         return std::any_cast<std::string>(left) == std::any_cast<std::string>(right);
 
-    std::cerr << "Error: What are we even comparing?\n";
+    // likely comparing number and string type. just return false.
     return false;
 }
 
 void Interpreter::checkNumberOperand(Token operator_, std::any operand) {
     if (operand.type() == typeid(double))
         return;
-    throw new RuntimeError(operator_, "Operand must be a number");
+    throw RuntimeError(operator_, "Operand must be a number");
 }
 
 void Interpreter::checkNumberOperands (
@@ -128,7 +128,7 @@ void Interpreter::checkNumberOperands (
 ) {
     if (left.type() == typeid(double) && right.type() == typeid(double))
         return;
-    throw new RuntimeError(operator_, "Operand must be numbers");
+    throw RuntimeError(operator_, "Operand must be numbers");
 }
 
 void Interpreter::interpret(Expression* expression) {
