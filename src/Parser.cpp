@@ -163,17 +163,14 @@ Parser::ParseError Parser::error(Token token, const std::string& msg) {
     return ParseError(msg);
 }
 
-std::unique_ptr<Expression> Parser::parse() {
-    try {
-        return expression();
+std::vector<std::unique_ptr<Statement>> Parser::parse() {
+    std::vector<std::unique_ptr<Statement>> statements;
+
+    while (!isAtEnd()) {
+        statements.push_back(std::move(statement()));
     }
-    catch (ParseError& e) {
-        return nullptr;
-    }
-    catch (...) {
-        std::cout << "Unexpected error occurred.\n";
-        return nullptr;
-    }
+
+    return statements;
 }
 
 void Parser::synchronise() {
@@ -199,4 +196,9 @@ void Parser::synchronise() {
 
         advance();
     }
+}
+
+std::unique_ptr<Statement> Parser::statement() {
+    if (match({ Token::Type::PRINT })) return printStatement();
+    return expressionStatement();
 }

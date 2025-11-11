@@ -25,12 +25,13 @@ primary         -> <NUMBER> | <STRING>
 
 #include "Lexer.h"
 #include "Expression.h"
+#include "Statement.h"
 
 class Parser {
 public:
     Parser(std::vector<Token> tokens);
 
-    std::unique_ptr<Expression> parse();
+    std::vector<std::unique_ptr<Statement>> parse();
 private:
     class ParseError : public std::runtime_error {
         ParseError(const std::string& error)
@@ -56,6 +57,8 @@ private:
     Token consume(Token::Type type, const std::string& msg);
     ParseError error(Token token, const std::string& msg);
     void synchronise();
+    std::unique_ptr<Statement> statement();
+
 
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};
