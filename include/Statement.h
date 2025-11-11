@@ -38,6 +38,8 @@ public:
     std::any accept(Visitor& visitor) {
         return visitor.visitExpressionStmt(*this);
     }
+
+    friend class Interpreter;
 private:
     std::unique_ptr<Expression> m_expression;
 };
@@ -52,6 +54,8 @@ public:
     std::any accept(Visitor& visitor) {
         return visitor.visitPrintStmt(*this);
     }
+
+    friend class Interpreter;
 private:
     std::unique_ptr<Expression> m_expression;
 };
