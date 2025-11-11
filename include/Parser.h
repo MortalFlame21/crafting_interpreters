@@ -58,7 +58,8 @@ private:
     ParseError error(Token token, const std::string& msg);
     void synchronise();
     std::unique_ptr<Statement> statement();
-
+    std::unique_ptr<Statement> expressionStatement();
+    std::unique_ptr<Statement> printStatement();
 
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};

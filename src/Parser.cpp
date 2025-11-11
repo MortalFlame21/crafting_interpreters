@@ -202,3 +202,13 @@ std::unique_ptr<Statement> Parser::statement() {
     if (match({ Token::Type::PRINT })) return printStatement();
     return expressionStatement();
 }
+
+std::unique_ptr<Statement> Parser::expressionStatement() {
+
+}
+
+std::unique_ptr<Statement> Parser::printStatement() {
+    auto expr { expression() };
+    consume(Token::Type::SEMICOLON, "Expect ';' after value.");
+    return std::make_unique<PrintStmt>(expr);
+}
