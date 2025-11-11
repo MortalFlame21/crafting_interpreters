@@ -7,7 +7,7 @@
 #include "Lexer.h"
 #include "Expression.h"
 
-class Interpreter : public Visitor {
+class Interpreter : public Expression::Visitor {
 public:
     class RuntimeError : public std::runtime_error {
         Token m_token;
