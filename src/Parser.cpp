@@ -204,7 +204,9 @@ std::unique_ptr<Statement> Parser::statement() {
 }
 
 std::unique_ptr<Statement> Parser::expressionStatement() {
-
+    auto expr { expression() };
+    consume(Token::Type::SEMICOLON, "Expect ';' after value.");
+    return std::make_unique<ExpressionStmt>(expr);
 }
 
 std::unique_ptr<Statement> Parser::printStatement() {
