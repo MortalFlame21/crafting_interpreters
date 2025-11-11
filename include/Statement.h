@@ -30,24 +30,28 @@ public:
 
 class ExpressionStmt : public Statement {
 public:
-    ExpressionStmt() { }
+    ExpressionStmt(std::unique_ptr<Expression> expression)
+        : m_expression{ std::move(expression) }
+    { }
     virtual ~ExpressionStmt() { }
 
     std::any accept(Visitor& visitor) {
         return visitor.visitExpressionStmt(*this);
     }
 private:
-    std::unique_ptr<Expression> expression;
+    std::unique_ptr<Expression> m_expression;
 };
 
 class PrintStmt : public Statement {
 public:
-    PrintStmt() { }
+    PrintStmt(std::unique_ptr<Expression> expression)
+        : m_expression{ std::move(expression) }
+    { }
     virtual ~PrintStmt() { }
 
     std::any accept(Visitor& visitor) {
         return visitor.visitPrintStmt(*this);
     }
 private:
-    std::unique_ptr<Expression> expression;
+    std::unique_ptr<Expression> m_expression;
 };
