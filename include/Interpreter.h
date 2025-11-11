@@ -6,8 +6,9 @@
 
 #include "Lexer.h"
 #include "Expression.h"
+#include "Statement.h"
 
-class Interpreter : public Expression::Visitor {
+class Interpreter : public Expression::Visitor, public Statement::Visitor {
 public:
     class RuntimeError : public std::runtime_error {
         Token m_token;
@@ -19,10 +20,14 @@ public:
         friend class Lox;
     };
 
+    // expressions
 	std::any visitBinary(const Binary& binary) override;
 	std::any visitGrouping(const Grouping& grouping) override;
 	std::any visitLiteral(const Literal& literal) override;
 	std::any visitUnary(const Unary& unary) override;
+    // statements
+    std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
+    std::any visitPrintStmt(const PrintStmt& stmt) override;
     void interpret(Expression* expression);
 
 private:

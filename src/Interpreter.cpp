@@ -168,3 +168,13 @@ std::string Interpreter::str(std::any object) {
     // most likely a string??
     return std::any_cast<std::string>(object);
 }
+std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt) {
+    evaluate(stmt.m_expression.get());
+    return {};
+}
+
+std::any Interpreter::visitPrintStmt(const PrintStmt& stmt) {
+    std::any expr { evaluate(stmt.m_expression.get() )};
+    std::cout << str(expr);
+    return {};
+}
