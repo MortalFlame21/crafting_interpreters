@@ -3,16 +3,19 @@
 /*
 the grammar
 
-expression  -> <equality>;
-equality    -> <comparision> != | == <comparision>;
-comparision -> <term> > | >= | < | <= <term>;
-term        -> <factor> - | + <factor>;
-factor      -> <unary> / | * <unary>;
-unary       -> (! | -) <unary> | <primary>;
-primary     -> <NUMBER> | <STRING>
-               | "true" | "false" | "nil"
-               | "(" <expression> ")";
-
+program         -> <statement>";";
+statement       -> <expression_stmt>";" | <print_stmt>";";
+expression_stmt -> <expression>";";
+print_stmt      -> "print" <expression>";";
+expression      -> <equality>;
+equality        -> <comparision> != | == <comparision>;
+comparision     -> <term> > | >= | < | <= <term>;
+term            -> <factor> - | + <factor>;
+factor          -> <unary> / | * <unary>;
+unary           -> (! | -) <unary> | <primary>;
+primary         -> <NUMBER> | <STRING>
+                    | "true" | "false" | "nil"
+                    | "(" <expression> ")";
 */
 
 #include <string>
