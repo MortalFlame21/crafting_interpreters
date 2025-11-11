@@ -206,11 +206,11 @@ std::unique_ptr<Statement> Parser::statement() {
 std::unique_ptr<Statement> Parser::expressionStatement() {
     auto expr { expression() };
     consume(Token::Type::SEMICOLON, "Expect ';' after value.");
-    return std::make_unique<ExpressionStmt>(expr);
+    return std::make_unique<ExpressionStmt>(std::move(expr));
 }
 
 std::unique_ptr<Statement> Parser::printStatement() {
     auto expr { expression() };
     consume(Token::Type::SEMICOLON, "Expect ';' after value.");
-    return std::make_unique<PrintStmt>(expr);
+    return std::make_unique<PrintStmt>(std::move(expr));
 }

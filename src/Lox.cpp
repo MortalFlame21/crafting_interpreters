@@ -41,19 +41,19 @@ void Lox::run(std::string_view src) {
     auto tokens { lex.scanTokens() };
 
     Parser parser { tokens };
-    auto expr { parser.parse() };
+    auto statements { std::move(parser.parse()) };
 
     if (hadError) {
         return;
     }
 
-    AstPrinter printer {};
-    std::cout << "*** Start printer details ***\n";
-    std::cout << printer.print(expr.get());
-    std::cout << "\n*** End printer details ***\n";
+    // AstPrinter printer {};
+    // std::cout << "*** Start printer details ***\n";
+    // std::cout << printer.print(statements.get());
+    // std::cout << "\n*** End printer details ***\n";
 
     Interpreter interpreter {};
-    interpreter.interpret(expr.get());
+    interpreter.interpret(std::move(statements));
 }
 
 void Lox::runtimeError(Interpreter::RuntimeError& error) {

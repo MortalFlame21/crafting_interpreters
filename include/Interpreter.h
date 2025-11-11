@@ -28,7 +28,8 @@ public:
     // statements
     std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
-    void interpret(Expression* expression);
+    void interpret(std::vector<std::unique_ptr<Statement>> statements);
+    void execute(Statement* stmt);
 
 private:
     std::any evaluate(Expression* expression);

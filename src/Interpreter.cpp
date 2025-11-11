@@ -135,10 +135,11 @@ void Interpreter::checkNumberOperands (
     throw RuntimeError(operator_, "Operand must be numbers");
 }
 
-void Interpreter::interpret(Expression* expression) {
+void Interpreter::interpret(std::vector<std::unique_ptr<Statement>> statements) {
     try {
-        std::any value = evaluate(expression);
-        std::cout << str(value) << "\n";
+        for (auto& stmt : statements) {
+            execute(stmt.get());
+        }
     }
     catch (RuntimeError& e) {
         Lox::runtimeError(e);
@@ -177,4 +178,8 @@ std::any Interpreter::visitPrintStmt(const PrintStmt& stmt) {
     std::any expr { evaluate(stmt.m_expression.get() )};
     std::cout << str(expr);
     return {};
+}
+
+void Interpreter::execute(Statement* stmt) {
+    stmt->accept(*this);
 }
