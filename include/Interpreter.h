@@ -7,6 +7,7 @@
 #include "Lexer.h"
 #include "Expression.h"
 #include "Statement.h"
+#include "Environment.h"
 
 class Interpreter : public Expression::Visitor, public Statement::Visitor {
 public:
@@ -39,4 +40,6 @@ private:
     void checkNumberOperand(Token operator_, std::any operand);
     void checkNumberOperands(Token operator_, std::any left, std::any right);
     std::string str(std::any object);
+
+    Environment m_environment;
 };
