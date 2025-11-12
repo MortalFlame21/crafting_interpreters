@@ -11,13 +11,11 @@
 class Interpreter : public Expression::Visitor, public Statement::Visitor {
 public:
     class RuntimeError : public std::runtime_error {
-        Token m_token;
-
+    public:
         RuntimeError(Token token, const std::string& error)
             : std::runtime_error{ error }, m_token{ token } { };
 
-        friend class Interpreter;
-        friend class Lox;
+        Token m_token;
     };
 
     // expressions
