@@ -37,9 +37,9 @@ public:
     std::vector<std::unique_ptr<Statement>> parse();
 private:
     class ParseError : public std::runtime_error {
+    public:
         ParseError(const std::string& error)
             : std::runtime_error{ error } { };
-        friend class Parser;
     };
 
     std::unique_ptr<Expression> expression();
