@@ -186,9 +186,14 @@ void Interpreter::execute(Statement* stmt) {
 }
 
 std::any Interpreter::visitVariable(const Variable& variable) {
-    return "visitVariable";
+    return m_environment.get(variable.m_name);
 }
 
 std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
-    return "visitVariableStmt";
+    std::any value {};
+    if (!stmt.m_expression)
+        value = evaluate(stmt.m_expression.get());
+
+    m_environment.define(stmt.m_name.m_lexeme, value);
+    return {};
 }
