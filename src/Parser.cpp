@@ -224,3 +224,14 @@ std::unique_ptr<Statement> Parser::declaration() {
         return {};
     }
 }
+
+std::unique_ptr<Statement> Parser::varDeclaration() {
+    auto name { consume(Token::Type::IDENTIFIER, "Expect variable name" )};
+
+    std::unique_ptr<Expression> expr {};
+    if (match({ Token::Type::EQUAL }))
+        expr = expression();
+
+    consume(Token::Type::SEMICOLON, "Expect ';' after variable declaration.");
+    return std::make_unique<VariableStmt>(name, expr);
+}
