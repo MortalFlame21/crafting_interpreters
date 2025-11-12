@@ -346,7 +346,7 @@ void Lexer::identifier() {
 
     std::string_view typeId { m_src.substr(m_start, m_current - m_start) };
     auto type { (m_keywords.find(typeId) == m_keywords.end()) ?
-        Token::Type::UNKNOWN_TOKEN_TYPE : m_keywords.find(typeId)->second };
+        Token::Type::IDENTIFIER : m_keywords.find(typeId)->second };
     addToken(type);
 }
 
