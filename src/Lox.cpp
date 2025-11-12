@@ -52,7 +52,7 @@ void Lox::run(std::string_view src) {
     // std::cout << printer.print(statements.get());
     // std::cout << "\n*** End printer details ***\n";
 
-    Interpreter interpreter {};
+    static Interpreter interpreter {};
     interpreter.interpret(std::move(statements));
 }
 
