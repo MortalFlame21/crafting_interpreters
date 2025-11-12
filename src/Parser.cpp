@@ -236,5 +236,5 @@ std::unique_ptr<Statement> Parser::varDeclaration() {
         expr = expression();
 
     consume(Token::Type::SEMICOLON, "Expect ';' after variable declaration.");
-    return std::make_unique<VariableStmt>(name, expr);
+    return std::make_unique<VariableStmt>(name, std::move(expr));
 }
