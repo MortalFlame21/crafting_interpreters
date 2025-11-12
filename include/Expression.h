@@ -9,6 +9,7 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Variable;
 
 class Expression {
 public:
@@ -24,6 +25,7 @@ public:
         virtual std::any visitGrouping(const Grouping& grouping) = 0;
         virtual std::any visitLiteral(const Literal& literal) = 0;
         virtual std::any visitUnary(const Unary& unary) = 0;
+        virtual std::any visitVariable(const Variable& variable) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -110,4 +112,22 @@ public:
 private:
     std::unique_ptr<Expression> m_right;
     Token m_operator;
+};
+
+class Variable : public Expression {
+public:
+    Variable(Token name)
+        : m_name{ name }
+    { }
+
+    virtual ~Variable() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitVariable(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+private:
+    Token m_name;
 };
