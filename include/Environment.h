@@ -8,10 +8,10 @@ class Token;
 class Interpreter;
 
 class Environment {
-private:
+public:
     void define(std::string_view name, std::any& value);
-
     std::any get(Token name);
 
+private:
     std::unordered_map<std::string_view, std::any> m_values {};
 };
