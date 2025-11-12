@@ -25,9 +25,12 @@ public:
 	std::any visitGrouping(const Grouping& grouping) override;
 	std::any visitLiteral(const Literal& literal) override;
 	std::any visitUnary(const Unary& unary) override;
+	std::any visitVariable(const Variable& variable) override;
     // statements
     std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
+    std::any visitVariableStmt(const VariableStmt& stmt) override;
+
     void interpret(std::vector<std::unique_ptr<Statement>> statements);
     void execute(Statement* stmt);
 

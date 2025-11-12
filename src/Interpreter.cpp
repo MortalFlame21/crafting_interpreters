@@ -183,3 +183,11 @@ std::any Interpreter::visitPrintStmt(const PrintStmt& stmt) {
 void Interpreter::execute(Statement* stmt) {
     stmt->accept(*this);
 }
+
+std::any Interpreter::visitVariable(const Variable& variable) {
+    return "visitVariable";
+}
+
+std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
+    return "visitVariableStmt";
+}
