@@ -3,10 +3,12 @@
 /*
 the grammar
 
-program         -> <statement>";";
-statement       -> <expression_stmt>";" | <print_stmt>";";
-expression_stmt -> <expression>";";
-print_stmt      -> "print" <expression>";";
+program         -> <declaration>;
+declaration     -> <var_declaration> | <statement>;
+var_declaration -> "var" <IDENTIFIER> "=" <expression> ";";
+statement       -> <expression_stmt> ";" | <print_stmt> ";";
+expression_stmt -> <expression> ";";
+print_stmt      -> "print" <expression> ";";
 expression      -> <equality>;
 equality        -> <comparision> != | == <comparision>;
 comparision     -> <term> > | >= | < | <= <term>;
@@ -15,7 +17,8 @@ factor          -> <unary> / | * <unary>;
 unary           -> (! | -) <unary> | <primary>;
 primary         -> <NUMBER> | <STRING>
                     | "true" | "false" | "nil"
-                    | "(" <expression> ")";
+                    | "(" <expression> ")"
+                    | <IDENTIFIER>;
 */
 
 #include <string>
