@@ -191,7 +191,7 @@ std::any Interpreter::visitVariable(const Variable& variable) {
 
 std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
     std::any value {};
-    if (!stmt.m_expression)
+    if (stmt.m_expression)
         value = evaluate(stmt.m_expression.get());
 
     m_environment.define(stmt.m_name.m_lexeme, value);
