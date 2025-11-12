@@ -176,7 +176,7 @@ std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt) {
 
 std::any Interpreter::visitPrintStmt(const PrintStmt& stmt) {
     std::any expr { evaluate(stmt.m_expression.get() )};
-    std::cout << str(expr);
+    std::cout << str(expr) << "\n";
     return {};
 }
 
