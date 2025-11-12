@@ -7,6 +7,7 @@
 
 class ExpressionStmt;
 class PrintStmt;
+class VariableStmt;
 
 class Statement {
 public:
@@ -20,6 +21,7 @@ public:
         // do I need std::any here or std::string is enough?
         virtual std::any visitExpressionStmt(const ExpressionStmt& stmt) = 0;
         virtual std::any visitPrintStmt(const PrintStmt& stmt) = 0;
+        virtual std::any visitVariableStmt(const VariableStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -57,5 +59,22 @@ public:
 
     friend class Interpreter;
 private:
+    std::unique_ptr<Expression> m_expression;
+};
+
+class VariableStmt : public Statement {
+public:
+    VariableStmt(Token name, std::unique_ptr<Expression> expression)
+        : m_name { name }, m_expression{ std::move(expression) }
+    { }
+    virtual ~VariableStmt() { }
+
+    std::any accept(Visitor& visitor) {
+        return visitor.visitVariableStmt(*this);
+    }
+
+    friend class Interpreter;
+private:
+    Token m_name;
     std::unique_ptr<Expression> m_expression;
 };
