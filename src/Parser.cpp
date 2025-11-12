@@ -167,7 +167,7 @@ std::vector<std::unique_ptr<Statement>> Parser::parse() {
     std::vector<std::unique_ptr<Statement>> statements;
 
     while (!isAtEnd()) {
-        statements.push_back(std::move(statement()));
+        statements.push_back(std::move(declaration()));
     }
 
     return statements;
@@ -213,4 +213,14 @@ std::unique_ptr<Statement> Parser::printStatement() {
     auto expr { expression() };
     consume(Token::Type::SEMICOLON, "Expect ';' after value.");
     return std::make_unique<PrintStmt>(std::move(expr));
+}
+
+std::unique_ptr<Statement> Parser::declaration() {
+    try {
+        if (match({ Token::Type::VAR })) return varDeclaration();
+        return statement();
+    } catch (ParseError& e) {
+        synchronise();
+        return {};
+    }
 }
