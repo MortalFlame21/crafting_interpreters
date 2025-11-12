@@ -150,6 +150,9 @@ std::unique_ptr<Expression> Parser::primary() {
         return std::make_unique<Grouping>(std::move(expr));
     }
 
+    if (match({ Token::Type::IDENTIFIER }))
+        return std::make_unique<Variable>(previous());
+
     throw error(peek(), "Expect expression.");
 }
 
