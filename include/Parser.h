@@ -67,6 +67,7 @@ private:
     std::unique_ptr<Statement> printStatement();
     std::unique_ptr<Statement> declaration();
     std::unique_ptr<Statement> varDeclaration();
+    std::unique_ptr<Expression> assignment();
 
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};

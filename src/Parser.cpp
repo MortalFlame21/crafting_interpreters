@@ -14,7 +14,7 @@ Parser::Parser(std::vector<Token> tokens)
     : m_tokens{ tokens } { }
 
 std::unique_ptr<Expression> Parser::expression() {
-    return equality();
+    return assignment();
 }
 
 std::unique_ptr<Expression> Parser::equality() {
@@ -237,4 +237,20 @@ std::unique_ptr<Statement> Parser::varDeclaration() {
 
     consume(Token::Type::SEMICOLON, "Expect ';' after variable declaration.");
     return std::make_unique<VariableStmt>(name, std::move(expr));
+}
+
+std::unique_ptr<Expression> Parser::assignment() {
+    auto expr { equality() };
+
+    // if (match({ Token::Type::EQUAL })) {
+    //     auto equals { previous() };
+    //     auto value { assignment() };
+
+    //     if (typeid(expr) == typeid(std::unique_ptr<Variable>)) {
+    //         auto name { std::static_cast<Variable>(expr.get())->name };
+    //         return std::make_unique<Assignment>(name, value);
+    //     }
+    // }
+
+    return expr;
 }
