@@ -10,6 +10,7 @@ class Grouping;
 class Literal;
 class Unary;
 class Variable;
+class Assignment;
 
 class Expression {
 public:
@@ -26,7 +27,7 @@ public:
         virtual std::any visitLiteral(const Literal& literal) = 0;
         virtual std::any visitUnary(const Unary& unary) = 0;
         virtual std::any visitVariable(const Variable& variable) = 0;
-        virtual std::any visitVariable(const Variable& variable) = 0;
+        virtual std::any visitAssignment(const Assignment& Assignment) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -142,7 +143,7 @@ public:
     virtual ~Assignment() { };
 
     std::any accept(Visitor& visitor) override {
-        return "visitor.visitVariable(*this)";
+        return visitor.visitAssignment(*this);
     }
 
     friend class AstPrinter;
