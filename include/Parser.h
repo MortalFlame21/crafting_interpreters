@@ -9,7 +9,9 @@ var_declaration -> "var" <IDENTIFIER> "=" <expression> ";";
 statement       -> <expression_stmt> ";" | <print_stmt> ";";
 expression_stmt -> <expression> ";";
 print_stmt      -> "print" <expression> ";";
-expression      -> <equality>;
+expression      -> <assignment>;
+assignment      -> <IDENTIFIER> "=" <assignment>
+                    | <equality>
 equality        -> <comparision> != | == <comparision>;
 comparision     -> <term> > | >= | < | <= <term>;
 term            -> <factor> - | + <factor>;
