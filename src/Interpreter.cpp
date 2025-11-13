@@ -197,3 +197,9 @@ std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
     m_environment.define(stmt.m_name.m_lexeme, value);
     return {};
 }
+
+std::any Interpreter::visitAssignment(const Assignment& assignment) {
+    std::any value { evaluate(assignment.m_value.get()) };
+    m_environment.assign(assignment.m_name, value);
+    return value;
+}

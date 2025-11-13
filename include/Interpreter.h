@@ -25,6 +25,7 @@ public:
 	std::any visitLiteral(const Literal& literal) override;
 	std::any visitUnary(const Unary& unary) override;
 	std::any visitVariable(const Variable& variable) override;
+	std::any visitAssignment(const Assignment& assignment) override;
     // statements
     std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
