@@ -14,7 +14,7 @@ std::any Environment::get(Token name) {
 
 void Environment::assign(Token name, std::any& value) {
     if (m_values.find(name.m_lexeme) != m_values.end()) {
-        m_values.insert({ name.m_lexeme, value });
+        m_values.at(name.m_lexeme) = value;
         return;
     }
     throw Interpreter::RuntimeError(name, "Undefined variable " + name.m_lexeme);
