@@ -125,11 +125,12 @@ public:
     virtual ~Variable() { };
 
     std::any accept(Visitor& visitor) override {
-        // return visitor.visitVariable(*this);
+        return visitor.visitVariable(*this);
     }
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Parser;
 private:
     Token m_name;
 };

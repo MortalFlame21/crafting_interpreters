@@ -242,15 +242,16 @@ std::unique_ptr<Statement> Parser::varDeclaration() {
 std::unique_ptr<Expression> Parser::assignment() {
     auto expr { equality() };
 
-    // if (match({ Token::Type::EQUAL })) {
-    //     auto equals { previous() };
-    //     auto value { assignment() };
+    if (match({ Token::Type::EQUAL })) {
+        auto equals { previous() };
+        auto value { assignment() };
 
-    //     if (typeid(expr) == typeid(std::unique_ptr<Variable>)) {
-    //         auto name { std::static_cast<Variable>(expr.get())->name };
-    //         return std::make_unique<Assignment>(name, value);
-    //     }
-    // }
+        // so wack but idk
+        if (auto* varExpr { dynamic_cast<Variable*>(expr.get()) }) {
+            auto name { varExpr->m_name };
+            return std::make_unique<Assignment>(name, std::move(value));
+        }
+    }
 
     return expr;
 }
