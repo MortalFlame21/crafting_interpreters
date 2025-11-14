@@ -251,6 +251,8 @@ std::unique_ptr<Expression> Parser::assignment() {
             auto name { varExpr->m_name };
             return std::make_unique<Assignment>(name, std::move(value));
         }
+
+        error(equals, "Invalid assignment target");
     }
 
     return expr;
