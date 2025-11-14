@@ -167,7 +167,7 @@ Parser::ParseError Parser::error(Token token, const std::string& msg) {
 }
 
 std::vector<std::unique_ptr<Statement>> Parser::parse() {
-    std::vector<std::unique_ptr<Statement>> statements;
+    std::vector<std::unique_ptr<Statement>> statements {};
 
     while (!isAtEnd()) {
         statements.push_back(std::move(declaration()));
@@ -203,6 +203,8 @@ void Parser::synchronise() {
 
 std::unique_ptr<Statement> Parser::statement() {
     if (match({ Token::Type::PRINT })) return printStatement();
+    if (match({ Token::Type::LEFT_BRACE }))
+        return std::make_unique<BlockStmt>(std::move(block()));
     return expressionStatement();
 }
 
@@ -256,4 +258,15 @@ std::unique_ptr<Expression> Parser::assignment() {
     }
 
     return expr;
+}
+
+std::vector<std::unique_ptr<Statement>> Parser::block() {
+    std::vector<std::unique_ptr<Statement>> statements {};
+
+    while (!check(Token::Type::RIGHT_BRACE) && !isAtEnd()) {
+        statements.push_back(declaration());
+    }
+
+    consume(Token::Type::RIGHT_BRACE, "Expect '}' at end of block");
+    return statements;
 }

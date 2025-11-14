@@ -70,6 +70,7 @@ private:
     std::unique_ptr<Statement> declaration();
     std::unique_ptr<Statement> varDeclaration();
     std::unique_ptr<Expression> assignment();
+    std::vector<std::unique_ptr<Statement>> block();
 
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};
