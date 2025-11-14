@@ -8,6 +8,7 @@
 class ExpressionStmt;
 class PrintStmt;
 class VariableStmt;
+class BlockStmt;
 
 class Statement {
 public:
@@ -22,6 +23,7 @@ public:
         virtual std::any visitExpressionStmt(const ExpressionStmt& stmt) = 0;
         virtual std::any visitPrintStmt(const PrintStmt& stmt) = 0;
         virtual std::any visitVariableStmt(const VariableStmt& stmt) = 0;
+        virtual std::any visitBlockStmt(const BlockStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -77,4 +79,19 @@ public:
 private:
     Token m_name;
     std::unique_ptr<Expression> m_expression;
+};
+
+class BlockStmt : public Statement {
+public:
+    BlockStmt(std::vector<Statement> statements)
+        : m_statements{ statements } { }
+    virtual ~BlockStmt() { }
+
+    std::any accept(Visitor& visitor) {
+        return visitor.visitBlockStmt(*this);
+    }
+
+    friend class Interpreter;
+private:
+    std::vector<Statement> m_statements;
 };

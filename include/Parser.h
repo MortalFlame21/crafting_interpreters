@@ -6,7 +6,9 @@ the grammar
 program         -> <declaration>;
 declaration     -> <var_declaration> | <statement>;
 var_declaration -> "var" <IDENTIFIER> "=" <expression> ";";
-statement       -> <expression_stmt> ";" | <print_stmt> ";";
+statement       -> <expression_stmt> ";" | <print_stmt> ";"
+                    | <block_stmt>;
+block_stmt      -> "{" <declaration> "}";
 expression_stmt -> <expression> ";";
 print_stmt      -> "print" <expression> ";";
 expression      -> <assignment>;
