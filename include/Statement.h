@@ -83,8 +83,8 @@ private:
 
 class BlockStmt : public Statement {
 public:
-    BlockStmt(std::vector<Statement> statements)
-        : m_statements{ statements } { }
+    BlockStmt(std::vector<std::unique_ptr<Statement>> statements)
+        : m_statements{ std::move(statements) } { }
     virtual ~BlockStmt() { }
 
     std::any accept(Visitor& visitor) {
@@ -93,5 +93,5 @@ public:
 
     friend class Interpreter;
 private:
-    std::vector<Statement> m_statements;
+    std::vector<std::unique_ptr<Statement>> m_statements;
 };
