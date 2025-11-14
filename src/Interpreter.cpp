@@ -203,3 +203,33 @@ std::any Interpreter::visitAssignment(const Assignment& assignment) {
     m_environment.assign(assignment.m_name, value);
     return value;
 }
+
+std::any Interpreter::visitBlockStmt(const BlockStmt& stmt) {
+    executeBlock (
+        std::move(stmt.m_statements),
+        std::move(m_environment)
+    );
+    return {};
+}
+
+void Interpreter::executeBlock (
+    std::vector<std::unique_ptr<Statement>> statements,
+    Environment environment
+) {
+    // temp move environment
+    auto parent_env { std::move(this->m_environment) };
+    try {
+        // use current environment
+        this->m_environment = std::move(environment);
+
+        for (auto& s : statements) {
+            execute(s.get());
+        }
+    }
+    // this is so wack...
+    catch (...) {
+        this->m_environment = std::move(parent_env);
+        throw;
+    }
+    this->m_environment = std::move(parent_env);
+}

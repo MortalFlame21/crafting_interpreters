@@ -30,10 +30,14 @@ public:
     std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
     std::any visitVariableStmt(const VariableStmt& stmt) override;
+    std::any visitBlockStmt(const BlockStmt& stmt) override;
 
     void interpret(std::vector<std::unique_ptr<Statement>> statements);
     void execute(Statement* stmt);
-
+    void executeBlock (
+        std::vector<std::unique_ptr<Statement>> statements,
+        Environment environment
+    );
 private:
     std::any evaluate(Expression* expression);
     bool isTruthy(std::any object);
