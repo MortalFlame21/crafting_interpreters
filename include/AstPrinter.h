@@ -8,7 +8,7 @@
 
 using namespace std::string_view_literals;
 
-class AstPrinter : public Visitor {
+class AstPrinter : public Expression::Visitor {
 public:
     std::string print(Expression* expr) {
         return std::any_cast<std::string>(expr->accept(*this));

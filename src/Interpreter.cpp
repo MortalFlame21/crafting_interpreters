@@ -4,6 +4,7 @@
 #include "Lexer.h"
 #include "Interpreter.h"
 #include "Lox.h"
+#include "Environment.h"
 
 std::any Interpreter::visitBinary(const Binary& binary) {
     std::any left { evaluate(binary.m_left.get()) };
@@ -135,10 +136,11 @@ void Interpreter::checkNumberOperands (
     throw RuntimeError(operator_, "Operand must be numbers");
 }
 
-void Interpreter::interpret(Expression* expression) {
+void Interpreter::interpret(std::vector<std::unique_ptr<Statement>> statements) {
     try {
-        std::any value = evaluate(expression);
-        std::cout << str(value) << "\n";
+        for (auto& stmt : statements) {
+            execute(stmt.get());
+        }
     }
     catch (RuntimeError& e) {
         Lox::runtimeError(e);
@@ -167,4 +169,67 @@ std::string Interpreter::str(std::any object) {
 
     // most likely a string??
     return std::any_cast<std::string>(object);
+}
+std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt) {
+    evaluate(stmt.m_expression.get());
+    return {};
+}
+
+std::any Interpreter::visitPrintStmt(const PrintStmt& stmt) {
+    std::any expr { evaluate(stmt.m_expression.get() )};
+    std::cout << str(expr) << "\n";
+    return {};
+}
+
+void Interpreter::execute(Statement* stmt) {
+    stmt->accept(*this);
+}
+
+std::any Interpreter::visitVariable(const Variable& variable) {
+    return m_environment->get(variable.m_name);
+}
+
+std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
+    std::any value {};
+    if (stmt.m_expression)
+        value = evaluate(stmt.m_expression.get());
+
+    m_environment->define(stmt.m_name.m_lexeme, value);
+    return {};
+}
+
+std::any Interpreter::visitAssignment(const Assignment& assignment) {
+    std::any value { evaluate(assignment.m_value.get()) };
+    if (m_environment)
+        m_environment->assign(assignment.m_name, value);
+    return value;
+}
+
+std::any Interpreter::visitBlockStmt(const BlockStmt& stmt) {
+    executeBlock (
+        stmt.m_statements,
+        std::make_shared<Environment>(m_environment)
+    );
+    return {};
+}
+
+void Interpreter::executeBlock (
+    const std::vector<std::unique_ptr<Statement>>& statements,
+    std::shared_ptr<Environment> environment
+) {
+    auto parent_env { m_environment };
+    try {
+        // use current environment
+        m_environment = environment;
+
+        for (auto& s : statements) {
+            execute(s.get());
+        }
+    }
+    // this is so wack...
+    catch (...) {
+        m_environment = parent_env;
+        throw;
+    }
+    m_environment = parent_env;
 }
