@@ -36,7 +36,7 @@ public:
     void execute(Statement* stmt);
     void executeBlock (
         const std::vector<std::unique_ptr<Statement>>& statements,
-        Environment environment
+        std::unique_ptr<Environment> environment
     );
 private:
     std::any evaluate(Expression* expression);
@@ -46,5 +46,5 @@ private:
     void checkNumberOperands(Token operator_, std::any left, std::any right);
     std::string str(std::any object);
 
-    Environment m_environment;
+    std::unique_ptr<Environment> m_environment { std::make_unique<Environment>() };
 };

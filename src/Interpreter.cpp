@@ -186,7 +186,7 @@ void Interpreter::execute(Statement* stmt) {
 }
 
 std::any Interpreter::visitVariable(const Variable& variable) {
-    return m_environment.get(variable.m_name);
+    return m_environment->get(variable.m_name);
 }
 
 std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
@@ -194,30 +194,29 @@ std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
     if (stmt.m_expression)
         value = evaluate(stmt.m_expression.get());
 
-    m_environment.define(stmt.m_name.m_lexeme, value);
+    m_environment->define(stmt.m_name.m_lexeme, value);
     return {};
 }
 
 std::any Interpreter::visitAssignment(const Assignment& assignment) {
     std::any value { evaluate(assignment.m_value.get()) };
-    m_environment.assign(assignment.m_name, value);
+    if (m_environment)
+        m_environment->assign(assignment.m_name, value);
     return value;
 }
 
 std::any Interpreter::visitBlockStmt(const BlockStmt& stmt) {
     executeBlock (
         stmt.m_statements,
-        std::move(m_environment)
+        std::make_unique<Environment>(std::move(m_environment))
     );
     return {};
 }
 
 void Interpreter::executeBlock (
     const std::vector<std::unique_ptr<Statement>>& statements,
-    Environment environment
+    std::unique_ptr<Environment> environment
 ) {
-    // temp for now will use a scope guard later
-    // temp move environment
     auto parent_env { std::move(m_environment) };
     try {
         // use current environment
