@@ -11,8 +11,8 @@ class Interpreter;
 class Environment {
 public:
     Environment() { }
-    Environment(std::unique_ptr<Environment> enclosing)
-        : m_enclosing { std::move(enclosing) }
+    Environment(std::shared_ptr<Environment> enclosing)
+        : m_enclosing { enclosing }
     { }
 
     void define(const std::string& name, std::any& value);
@@ -20,5 +20,5 @@ public:
     void assign(Token name, std::any& value);
 private:
     std::unordered_map<std::string, std::any> m_values {};
-    std::unique_ptr<Environment> m_enclosing {};
+    std::shared_ptr<Environment> m_enclosing {};
 };
