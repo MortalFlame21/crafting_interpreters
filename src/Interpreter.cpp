@@ -208,19 +208,19 @@ std::any Interpreter::visitAssignment(const Assignment& assignment) {
 std::any Interpreter::visitBlockStmt(const BlockStmt& stmt) {
     executeBlock (
         stmt.m_statements,
-        std::make_unique<Environment>(std::move(m_environment))
+        std::make_shared<Environment>(m_environment)
     );
     return {};
 }
 
 void Interpreter::executeBlock (
     const std::vector<std::unique_ptr<Statement>>& statements,
-    std::unique_ptr<Environment> environment
+    std::shared_ptr<Environment> environment
 ) {
-    auto parent_env { std::move(m_environment) };
+    auto parent_env { m_environment };
     try {
         // use current environment
-        m_environment = std::move(environment);
+        m_environment = environment;
 
         for (auto& s : statements) {
             execute(s.get());
@@ -228,8 +228,8 @@ void Interpreter::executeBlock (
     }
     // this is so wack...
     catch (...) {
-        m_environment = std::move(parent_env);
+        m_environment = parent_env;
         throw;
     }
-    m_environment = std::move(parent_env);
+    m_environment = parent_env;
 }

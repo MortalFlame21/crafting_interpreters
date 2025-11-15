@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <memory>
 #include <any>
 
 #include "Lexer.h"
@@ -36,7 +37,7 @@ public:
     void execute(Statement* stmt);
     void executeBlock (
         const std::vector<std::unique_ptr<Statement>>& statements,
-        std::unique_ptr<Environment> environment
+        std::shared_ptr<Environment> environment
     );
 private:
     std::any evaluate(Expression* expression);
@@ -46,5 +47,5 @@ private:
     void checkNumberOperands(Token operator_, std::any left, std::any right);
     std::string str(std::any object);
 
-    std::unique_ptr<Environment> m_environment { std::make_unique<Environment>() };
+    std::shared_ptr<Environment> m_environment { std::make_shared<Environment>() };
 };
