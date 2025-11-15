@@ -35,7 +35,7 @@ public:
     void interpret(std::vector<std::unique_ptr<Statement>> statements);
     void execute(Statement* stmt);
     void executeBlock (
-        std::vector<std::unique_ptr<Statement>> statements,
+        const std::vector<std::unique_ptr<Statement>>& statements,
         Environment environment
     );
 private:

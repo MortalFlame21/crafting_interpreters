@@ -206,21 +206,22 @@ std::any Interpreter::visitAssignment(const Assignment& assignment) {
 
 std::any Interpreter::visitBlockStmt(const BlockStmt& stmt) {
     executeBlock (
-        std::move(stmt.m_statements),
+        stmt.m_statements,
         std::move(m_environment)
     );
     return {};
 }
 
 void Interpreter::executeBlock (
-    std::vector<std::unique_ptr<Statement>> statements,
+    const std::vector<std::unique_ptr<Statement>>& statements,
     Environment environment
 ) {
+    // temp for now will use a scope guard later
     // temp move environment
-    auto parent_env { std::move(this->m_environment) };
+    auto parent_env { std::move(m_environment) };
     try {
         // use current environment
-        this->m_environment = std::move(environment);
+        m_environment = std::move(environment);
 
         for (auto& s : statements) {
             execute(s.get());
@@ -228,8 +229,8 @@ void Interpreter::executeBlock (
     }
     // this is so wack...
     catch (...) {
-        this->m_environment = std::move(parent_env);
+        m_environment = std::move(parent_env);
         throw;
     }
-    this->m_environment = std::move(parent_env);
+    m_environment = std::move(parent_env);
 }
