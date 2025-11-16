@@ -41,7 +41,7 @@ void Lox::run(std::string_view src) {
     auto tokens { lex.scanTokens() };
 
     Parser parser { tokens };
-    auto statements { std::move(parser.parse()) };
+    auto statements { parser.parse() };
 
     if (hadError) {
         return;
