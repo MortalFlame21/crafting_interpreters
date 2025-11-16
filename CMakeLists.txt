@@ -17,4 +17,6 @@ file(
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
 )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Werror -Weffc++ -Wextra -Wconversion -Wsign-conversion")
+
 add_executable(${exec} ${all_srcs})

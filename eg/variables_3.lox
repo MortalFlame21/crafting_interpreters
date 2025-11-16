@@ -1,0 +1,12 @@
+var a = 1;
+var b = a;
+
+print a;
+print b;
+print a + b;
+
+b = "string value";
+print b;
+
+a = b;
+print a;
