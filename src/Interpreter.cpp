@@ -55,6 +55,8 @@ std::any Interpreter::visitBinary(const Binary& binary) {
             throw new RuntimeError (
                 binary.m_operator, "Operands must be two numbers or two strings"
             );
+        default:
+            return nullptr;
         }
     }
     catch (const std::bad_any_cast& e)
@@ -62,8 +64,6 @@ std::any Interpreter::visitBinary(const Binary& binary) {
         std::cerr << "Error: std::any_cast: " << e.what() << "\n";
         return nullptr;
     }
-
-    return nullptr;
 }
 
 std::any Interpreter::visitGrouping(const Grouping& grouping) {
@@ -87,6 +87,8 @@ std::any Interpreter::visitUnary(const Unary& unary) {
         case Token::Type::MINUS:
             checkNumberOperand(unary.m_operator, right);
             return std::any_cast<double>(right);
+        default:
+            return nullptr;
         };
     }
     catch (const std::bad_any_cast& e)
@@ -94,8 +96,6 @@ std::any Interpreter::visitUnary(const Unary& unary) {
         std::cerr << "Error: std::any_cast: " << e.what() << "\n";
         return nullptr;
     }
-
-    return nullptr;
 }
 
 std::any Interpreter::evaluate(Expression* expression) {
