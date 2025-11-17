@@ -233,3 +233,7 @@ void Interpreter::executeBlock (
     }
     m_environment = parent_env;
 }
+
+std::any Interpreter::visitIfStatement([[maybe_unused]] const IfStmt& stmt) {
+    return {};
+}
