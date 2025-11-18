@@ -243,7 +243,7 @@ std::unique_ptr<Statement> Parser::varDeclaration() {
 }
 
 std::unique_ptr<Expression> Parser::assignment() {
-    auto expr { equality() };
+    auto expr { logicalOr() };
 
     if (match({ Token::Type::EQUAL })) {
         auto equals { previous() };
@@ -286,4 +286,38 @@ std::unique_ptr<Statement> Parser::ifStatement() {
         std::move(thenBranch),
         std::move(elseBranch)
     );
+}
+
+std::unique_ptr<Expression> Parser::logicalOr() {
+    auto expr { logicalAnd() };
+
+    while (match({ Token::Type::OR })) {
+        auto operator_ { previous() };
+        auto right { logicalAnd() };
+
+        expr = std::make_unique<Logical> (
+            std::move(expr),
+            std::move(right),
+            std::move(operator_)
+        );
+    }
+
+    return expr;
+}
+
+std::unique_ptr<Expression> Parser::logicalAnd() {
+    auto expr { equality() };
+
+    while (match({ Token::Type::AND })) {
+        auto operator_ { previous() };
+        auto right { equality() };
+
+        expr = std::make_unique<Logical> (
+            std::move(expr),
+            std::move(right),
+            std::move(operator_)
+        );
+    }
+
+    return expr;
 }

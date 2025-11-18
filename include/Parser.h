@@ -16,8 +16,8 @@ print_stmt      -> "print" <expression> ";";
 expression      -> <assignment>;
 assignment      -> <IDENTIFIER> "=" <assignment>
                     | <equality>
-logic_or        -> <logic_and> "or" <equality>;
-logic_and       -> <equality> "and" <equality>;
+logical_or      -> <logical_and> "or" <equality>;
+logical_and     -> <equality> "and" <equality>;
 equality        -> <comparision> != | == <comparision>;
 comparision     -> <term> > | >= | < | <= <term>;
 term            -> <factor> - | + <factor>;
@@ -76,6 +76,8 @@ private:
     std::unique_ptr<Expression> assignment();
     std::vector<std::unique_ptr<Statement>> block();
     std::unique_ptr<Statement> ifStatement();
+    std::unique_ptr<Expression> logicalOr();
+    std::unique_ptr<Expression> logicalAnd();
 
     const std::vector<Token> m_tokens{};
     std::size_t m_current{};
