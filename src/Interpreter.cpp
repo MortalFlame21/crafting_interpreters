@@ -240,5 +240,19 @@ std::any Interpreter::visitIfStatement(IfStmt& stmt) {
     else if (stmt.m_elseBranch)
         execute(stmt.m_elseBranch.get());
     return {};
+}
 
+std::any Interpreter::visitLogical(Logical& logical) {
+    auto left { evaluate(logical.m_left.get()) };
+
+    if (logical.m_operator.m_type == Token::Type::OR) {
+        if (isTruthy(left))
+            return left;
+    }
+    else {
+        if (!isTruthy(left))
+            return left;
+    }
+
+    return evaluate(logical.m_right.get());
 }
