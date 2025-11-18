@@ -22,12 +22,12 @@ public:
         Visitor() = default;
         virtual ~Visitor() { };
         // do I need std::any here or std::string is enough?
-        virtual std::any visitBinary(const Binary& binary) = 0;
-        virtual std::any visitGrouping(const Grouping& grouping) = 0;
-        virtual std::any visitLiteral(const Literal& literal) = 0;
-        virtual std::any visitUnary(const Unary& unary) = 0;
-        virtual std::any visitVariable(const Variable& variable) = 0;
-        virtual std::any visitAssignment(const Assignment& Assignment) = 0;
+        virtual std::any visitBinary(Binary& binary) = 0;
+        virtual std::any visitGrouping(Grouping& grouping) = 0;
+        virtual std::any visitLiteral(Literal& literal) = 0;
+        virtual std::any visitUnary(Unary& unary) = 0;
+        virtual std::any visitVariable(Variable& variable) = 0;
+        virtual std::any visitAssignment(Assignment& Assignment) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;

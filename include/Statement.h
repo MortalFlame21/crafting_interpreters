@@ -21,11 +21,11 @@ public:
         Visitor() = default;
         virtual ~Visitor() { };
         // do I need std::any here or std::string is enough?
-        virtual std::any visitExpressionStmt(const ExpressionStmt& stmt) = 0;
-        virtual std::any visitPrintStmt(const PrintStmt& stmt) = 0;
-        virtual std::any visitVariableStmt(const VariableStmt& stmt) = 0;
-        virtual std::any visitBlockStmt(const BlockStmt& stmt) = 0;
-        virtual std::any visitIfStatement(const IfStmt& stmt) = 0;
+        virtual std::any visitExpressionStmt(ExpressionStmt& stmt) = 0;
+        virtual std::any visitPrintStmt(PrintStmt& stmt) = 0;
+        virtual std::any visitVariableStmt(VariableStmt& stmt) = 0;
+        virtual std::any visitBlockStmt(BlockStmt& stmt) = 0;
+        virtual std::any visitIfStatement(IfStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
