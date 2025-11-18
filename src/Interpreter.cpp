@@ -234,6 +234,11 @@ void Interpreter::executeBlock (
     m_environment = parent_env;
 }
 
-std::any Interpreter::visitIfStatement([[maybe_unused]] IfStmt& stmt) {
+std::any Interpreter::visitIfStatement(IfStmt& stmt) {
+    if (isTruthy(evaluate(stmt.m_condition.get())))
+        execute(stmt.m_thenBranch.get());
+    else if (stmt.m_elseBranch)
+        execute(stmt.m_elseBranch.get());
     return {};
+
 }
