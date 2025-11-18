@@ -6,7 +6,7 @@
 #include "Lox.h"
 #include "Environment.h"
 
-std::any Interpreter::visitBinary(const Binary& binary) {
+std::any Interpreter::visitBinary(Binary& binary) {
     std::any left { evaluate(binary.m_left.get()) };
     std::any right { evaluate(binary.m_right.get()) };
 
@@ -66,16 +66,16 @@ std::any Interpreter::visitBinary(const Binary& binary) {
     }
 }
 
-std::any Interpreter::visitGrouping(const Grouping& grouping) {
+std::any Interpreter::visitGrouping(Grouping& grouping) {
     // would like to use some shared pointer here.
     return evaluate(grouping.m_expression.get());
 }
 
-std::any Interpreter::visitLiteral(const Literal& literal) {
+std::any Interpreter::visitLiteral(Literal& literal) {
     return literal.m_value;
 }
 
-std::any Interpreter::visitUnary(const Unary& unary) {
+std::any Interpreter::visitUnary(Unary& unary) {
     // would like to use some shared pointer here.
     std::any right { evaluate(unary.m_right.get()) };
 
@@ -170,12 +170,12 @@ std::string Interpreter::str(std::any object) {
     // most likely a string??
     return std::any_cast<std::string>(object);
 }
-std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt) {
+std::any Interpreter::visitExpressionStmt(ExpressionStmt& stmt) {
     evaluate(stmt.m_expression.get());
     return {};
 }
 
-std::any Interpreter::visitPrintStmt(const PrintStmt& stmt) {
+std::any Interpreter::visitPrintStmt(PrintStmt& stmt) {
     std::any expr { evaluate(stmt.m_expression.get() )};
     std::cout << str(expr) << "\n";
     return {};
@@ -185,11 +185,11 @@ void Interpreter::execute(Statement* stmt) {
     stmt->accept(*this);
 }
 
-std::any Interpreter::visitVariable(const Variable& variable) {
+std::any Interpreter::visitVariable(Variable& variable) {
     return m_environment->get(variable.m_name);
 }
 
-std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
+std::any Interpreter::visitVariableStmt(VariableStmt& stmt) {
     std::any value {};
     if (stmt.m_expression)
         value = evaluate(stmt.m_expression.get());
@@ -198,14 +198,14 @@ std::any Interpreter::visitVariableStmt(const VariableStmt& stmt) {
     return {};
 }
 
-std::any Interpreter::visitAssignment(const Assignment& assignment) {
+std::any Interpreter::visitAssignment(Assignment& assignment) {
     std::any value { evaluate(assignment.m_value.get()) };
     if (m_environment)
         m_environment->assign(assignment.m_name, value);
     return value;
 }
 
-std::any Interpreter::visitBlockStmt(const BlockStmt& stmt) {
+std::any Interpreter::visitBlockStmt(BlockStmt& stmt) {
     executeBlock (
         stmt.m_statements,
         std::make_shared<Environment>(m_environment)
@@ -234,6 +234,6 @@ void Interpreter::executeBlock (
     m_environment = parent_env;
 }
 
-std::any Interpreter::visitIfStatement([[maybe_unused]] const IfStmt& stmt) {
+std::any Interpreter::visitIfStatement([[maybe_unused]] IfStmt& stmt) {
     return {};
 }

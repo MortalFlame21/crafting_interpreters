@@ -21,18 +21,18 @@ public:
     };
 
     // expressions
-	std::any visitBinary(const Binary& binary) override;
-	std::any visitGrouping(const Grouping& grouping) override;
-	std::any visitLiteral(const Literal& literal) override;
-	std::any visitUnary(const Unary& unary) override;
-	std::any visitVariable(const Variable& variable) override;
-	std::any visitAssignment(const Assignment& assignment) override;
+	std::any visitBinary(Binary& binary) override;
+	std::any visitGrouping(Grouping& grouping) override;
+	std::any visitLiteral(Literal& literal) override;
+	std::any visitUnary(Unary& unary) override;
+	std::any visitVariable(Variable& variable) override;
+	std::any visitAssignment(Assignment& assignment) override;
     // statements
-    std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
-    std::any visitPrintStmt(const PrintStmt& stmt) override;
-    std::any visitVariableStmt(const VariableStmt& stmt) override;
-    std::any visitBlockStmt(const BlockStmt& stmt) override;
-    std::any visitIfStatement(const IfStmt& stmt) override;
+    std::any visitExpressionStmt(ExpressionStmt& stmt) override;
+    std::any visitPrintStmt(PrintStmt& stmt) override;
+    std::any visitVariableStmt(VariableStmt& stmt) override;
+    std::any visitBlockStmt(BlockStmt& stmt) override;
+    std::any visitIfStatement(IfStmt& stmt) override;
 
     void interpret(std::vector<std::unique_ptr<Statement>> statements);
     void execute(Statement* stmt);
