@@ -16,6 +16,8 @@ print_stmt      -> "print" <expression> ";";
 expression      -> <assignment>;
 assignment      -> <IDENTIFIER> "=" <assignment>
                     | <equality>
+logic_or        -> <logic_and> "or" <equality>;
+logic_and       -> <equality> "and" <equality>;
 equality        -> <comparision> != | == <comparision>;
 comparision     -> <term> > | >= | < | <= <term>;
 term            -> <factor> - | + <factor>;
