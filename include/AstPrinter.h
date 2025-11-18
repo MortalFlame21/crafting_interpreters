@@ -14,25 +14,25 @@ public:
         return std::any_cast<std::string>(expr->accept(*this));
     }
 
-	std::any visitBinary(const Binary& binary) override {
+	std::any visitBinary(Binary& binary) override {
         return parenthesize (
             binary.m_operator.m_lexeme,
             { binary.m_left.get(), binary.m_right.get() }
         );
     };
 
-	std::any visitGrouping(const Grouping& group) override {
+	std::any visitGrouping(Grouping& group) override {
         return parenthesize (
             "Grouping",
             { group.m_expression.get() }
         );
     };
 
-	std::any visitLiteral(const Literal& literal) override {
+	std::any visitLiteral(Literal& literal) override {
         return Token::anyToString(literal.m_value);
     };
 
-	std::any visitUnary(const Unary& unary) override {
+	std::any visitUnary(Unary& unary) override {
         return parenthesize (
             unary.m_operator.m_lexeme,
             { unary.m_right.get() }
