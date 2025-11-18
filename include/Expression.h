@@ -11,6 +11,7 @@ class Literal;
 class Unary;
 class Variable;
 class Assignment;
+class Logical;
 
 class Expression {
 public:
@@ -28,6 +29,7 @@ public:
         virtual std::any visitUnary(Unary& unary) = 0;
         virtual std::any visitVariable(Variable& variable) = 0;
         virtual std::any visitAssignment(Assignment& Assignment) = 0;
+        virtual std::any visitLogical(Logical& logical) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -152,4 +154,30 @@ public:
 private:
     Token m_name;
     std::unique_ptr<Expression> m_value;
+};
+
+class Logical : public Expression {
+public:
+    Logical (
+        std::unique_ptr<Expression> left,
+        std::unique_ptr<Expression> right,
+        Token operator_
+    )
+        : m_left{ std::move(left) }
+        , m_right{ std::move(right)  }
+        , m_operator{ operator_ }
+    { }
+
+    virtual ~Logical() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitLogical(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+private:
+    std::unique_ptr<Expression> m_left;
+    std::unique_ptr<Expression> m_right;
+    Token m_operator;
 };
