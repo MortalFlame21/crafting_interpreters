@@ -27,7 +27,7 @@ public:
         virtual std::any visitVariableStmt(VariableStmt& stmt) = 0;
         virtual std::any visitBlockStmt(BlockStmt& stmt) = 0;
         virtual std::any visitIfStatement(IfStmt& stmt) = 0;
-        virtual std::any visitWhile(While& while_) = 0;
+        virtual std::any visitWhileStatement(While& while_) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
