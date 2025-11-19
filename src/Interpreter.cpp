@@ -256,3 +256,10 @@ std::any Interpreter::visitLogical(Logical& logical) {
 
     return evaluate(logical.m_right.get());
 }
+
+std::any Interpreter::visitWhileStatement(While& stmt) {
+    while (isTruthy(stmt.m_condition.get())) {
+        execute(stmt.m_body.get());
+    }
+    return {};
+}
