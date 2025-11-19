@@ -138,7 +138,7 @@ public:
     virtual ~While() { };
 
     std::any accept(Visitor& visitor) override {
-        return visitor.visitWhile(*this);
+        return visitor.visitWhileStatement(*this);
     }
 
     friend class AstPrinter;
