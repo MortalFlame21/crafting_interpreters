@@ -1,0 +1,4 @@
+print "launching in...";
+for (var time = 10; time > 0; time = time - 1)
+    print time;
+print "launch off!";
