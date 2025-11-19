@@ -116,10 +116,23 @@ std::unique_ptr<Statement> Parser::varDeclaration() {
 
 std::unique_ptr<Statement> Parser::statement() {
     if (match({ Token::Type::IF })) return ifStatement();
+    if (match({ Token::Type::WHILE })) return whileStatement();
     if (match({ Token::Type::PRINT })) return printStatement();
     if (match({ Token::Type::LEFT_BRACE }))
         return std::make_unique<BlockStmt>(std::move(block()));
     return expressionStatement();
+}
+
+std::unique_ptr<Statement> Parser::whileStatement() {
+    consume(Token::Type::LEFT_PAREN, "Expect '(' after \"while\"");
+    auto condition { expression() };
+    consume(Token::Type::RIGHT_PAREN, "Expect ')' after condition");
+    auto body { statement() };
+
+    return std::make_unique<While> (
+        std::move(condition),
+        std::move(body)
+    );
 }
 
 std::unique_ptr<Statement> Parser::ifStatement() {
