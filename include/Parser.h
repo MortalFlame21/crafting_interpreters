@@ -6,9 +6,11 @@ the grammar
 program         -> <declaration>;
 declaration     -> <var_declaration> | <statement>;
 var_declaration -> "var" <IDENTIFIER> "=" <expression> ";";
-statement       -> <expression_stmt> ";" | <print_stmt> ";"
-                    | <block_stmt> | <if_stmt>;
-if_stmt         -> "if" "(" <expression_stmt> ")"
+statement       -> <expression_stmt> | <if_stmt>
+                    | <print_stmt> | <while_stmt>
+                    | <block_stmt>;
+while_stmt      -> "while" "(" <expression> ")" <statement>;
+if_stmt         -> "if" "(" <expression> ")"
                     <statement> "else" <statement>;
 block_stmt      -> "{" <declaration> "}";
 expression_stmt -> <expression> ";";
