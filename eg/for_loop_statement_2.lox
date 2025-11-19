@@ -1,0 +1,13 @@
+var n = 1;
+var num = 0;
+
+if (n < 1) {
+    num = 0;
+}
+else {
+    for (; n > 0; n = n - 1)
+        num = num + n;
+}
+
+print "the nth number in the fibonacci sequence is:";
+print num;

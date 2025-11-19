@@ -9,6 +9,8 @@ class ExpressionStmt;
 class PrintStmt;
 class VariableStmt;
 class BlockStmt;
+class IfStmt;
+class WhileStmt;
 
 class Statement {
 public:
@@ -20,10 +22,12 @@ public:
         Visitor() = default;
         virtual ~Visitor() { };
         // do I need std::any here or std::string is enough?
-        virtual std::any visitExpressionStmt(const ExpressionStmt& stmt) = 0;
-        virtual std::any visitPrintStmt(const PrintStmt& stmt) = 0;
-        virtual std::any visitVariableStmt(const VariableStmt& stmt) = 0;
-        virtual std::any visitBlockStmt(const BlockStmt& stmt) = 0;
+        virtual std::any visitExpressionStmt(ExpressionStmt& stmt) = 0;
+        virtual std::any visitPrintStmt(PrintStmt& stmt) = 0;
+        virtual std::any visitVariableStmt(VariableStmt& stmt) = 0;
+        virtual std::any visitBlockStmt(BlockStmt& stmt) = 0;
+        virtual std::any visitIfStatement(IfStmt& stmt) = 0;
+        virtual std::any visitWhileStatement(WhileStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -94,4 +98,52 @@ public:
     friend class Interpreter;
 private:
     std::vector<std::unique_ptr<Statement>> m_statements;
+};
+
+class IfStmt : public Statement {
+public:
+    IfStmt(
+        std::unique_ptr<Expression> condition,
+        std::unique_ptr<Statement> thenBranch,
+        std::unique_ptr<Statement> elseBranch
+    )
+    : m_condition { std::move(condition) }
+    , m_thenBranch { std::move(thenBranch) }
+    , m_elseBranch { std::move(elseBranch) }
+    { }
+
+    virtual ~IfStmt() { }
+
+    std::any accept(Visitor& visitor) {
+        return visitor.visitIfStatement(*this);
+    }
+
+    friend class Interpreter;
+private:
+    std::unique_ptr<Expression> m_condition;
+    std::unique_ptr<Statement> m_thenBranch;
+    std::unique_ptr<Statement> m_elseBranch;
+};
+
+class WhileStmt : public Statement {
+public:
+    WhileStmt (
+        std::unique_ptr<Expression> condition,
+        std::unique_ptr<Statement> body
+    )
+        : m_condition{ std::move(condition) }
+        , m_body{ std::move(body) }
+    { }
+
+    virtual ~WhileStmt() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitWhileStatement(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+private:
+    std::unique_ptr<Expression> m_condition;
+    std::unique_ptr<Statement> m_body;
 };
