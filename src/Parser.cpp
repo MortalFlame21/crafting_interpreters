@@ -115,6 +115,7 @@ std::unique_ptr<Statement> Parser::varDeclaration() {
 }
 
 std::unique_ptr<Statement> Parser::statement() {
+    if (match({ Token::Type::FOR })) return forStatement();
     if (match({ Token::Type::IF })) return ifStatement();
     if (match({ Token::Type::WHILE })) return whileStatement();
     if (match({ Token::Type::PRINT })) return printStatement();
@@ -123,13 +124,59 @@ std::unique_ptr<Statement> Parser::statement() {
     return expressionStatement();
 }
 
+std::unique_ptr<Statement> Parser::forStatement() {
+    consume(Token::Type::LEFT_PAREN, "Expect '(' after \"for\"");
+
+    // initializer
+    std::unique_ptr<Statement> init {};
+    if (match({ Token::Type::SEMICOLON }))
+        init = nullptr;
+    else if (match({ Token::Type::VAR }))
+        init = varDeclaration();
+    else
+        init = expressionStatement();
+
+    // condition
+    auto condition { (!check(Token::Type::SEMICOLON))
+                        ? expression() : nullptr };
+    consume(Token::Type::SEMICOLON, "Expect ';' after condition");
+
+    // increment
+    auto increment { (!check(Token::Type::SEMICOLON))
+                        ? expression() : nullptr };
+    consume(Token::Type::RIGHT_PAREN, "Expect ')' after for clause");
+
+    // body
+    auto body { statement() };
+    if (increment) {
+        std::vector<std::unique_ptr<Statement>> stmts {};
+        stmts.push_back(std::move(body));
+        stmts.push_back(std::make_unique<ExpressionStmt>(std::move(increment)));
+        body = std::make_unique<BlockStmt>(std::move(stmts));
+    }
+
+    if (!condition)
+        condition = std::make_unique<Literal>(true);
+
+    body = std::make_unique<WhileStmt>(std::move(condition), std::move(body));
+
+    if (init) {
+        std::vector<std::unique_ptr<Statement>> stmts {};
+        stmts.push_back(std::move(init));
+        stmts.push_back(std::move(body));
+        body = std::make_unique<BlockStmt>(std::move(stmts));
+    }
+
+    return body;
+}
+
 std::unique_ptr<Statement> Parser::whileStatement() {
     consume(Token::Type::LEFT_PAREN, "Expect '(' after \"while\"");
     auto condition { expression() };
     consume(Token::Type::RIGHT_PAREN, "Expect ')' after condition");
     auto body { statement() };
 
-    return std::make_unique<While> (
+    return std::make_unique<WhileStmt> (
         std::move(condition),
         std::move(body)
     );
