@@ -1,0 +1,20 @@
+if (true) {
+    print "if statement 1 -- true";
+}
+
+if (!false) {
+    print "if statement 2 -- !false";
+}
+
+if (3 * 8 == 9) {
+    print "if statement 3 -- 3 * 8 == 9. true";
+}
+else {
+    print "if statement 3 -- 3 * 8 == 24. true";
+}
+
+// no block
+if (3 * 8 == 9)
+    print "if statement 4 -- 3 * 8 == 9. true";
+else
+    print "if statement 4 -- 3 * 8 == 24. true";
