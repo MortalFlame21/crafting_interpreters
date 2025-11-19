@@ -10,6 +10,7 @@ class PrintStmt;
 class VariableStmt;
 class BlockStmt;
 class IfStmt;
+class While;
 
 class Statement {
 public:
@@ -26,6 +27,7 @@ public:
         virtual std::any visitVariableStmt(VariableStmt& stmt) = 0;
         virtual std::any visitBlockStmt(BlockStmt& stmt) = 0;
         virtual std::any visitIfStatement(IfStmt& stmt) = 0;
+        virtual std::any visitWhile(While& while_) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -121,4 +123,27 @@ private:
     std::unique_ptr<Expression> m_condition;
     std::unique_ptr<Statement> m_thenBranch;
     std::unique_ptr<Statement> m_elseBranch;
+};
+
+class While : public Statement {
+public:
+    While (
+        std::unique_ptr<Expression> condition,
+        std::unique_ptr<Statement> body
+    )
+        : m_condition{ std::move(condition) }
+        , m_body{ std::move(body) }
+    { }
+
+    virtual ~While() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitWhile(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+private:
+    std::unique_ptr<Expression> m_condition;
+    std::unique_ptr<Statement> m_body;
 };
