@@ -10,7 +10,7 @@ class PrintStmt;
 class VariableStmt;
 class BlockStmt;
 class IfStmt;
-class While;
+class WhileStmt;
 
 class Statement {
 public:
@@ -27,7 +27,7 @@ public:
         virtual std::any visitVariableStmt(VariableStmt& stmt) = 0;
         virtual std::any visitBlockStmt(BlockStmt& stmt) = 0;
         virtual std::any visitIfStatement(IfStmt& stmt) = 0;
-        virtual std::any visitWhileStatement(While& while_) = 0;
+        virtual std::any visitWhileStatement(WhileStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -125,9 +125,9 @@ private:
     std::unique_ptr<Statement> m_elseBranch;
 };
 
-class While : public Statement {
+class WhileStmt : public Statement {
 public:
-    While (
+    WhileStmt (
         std::unique_ptr<Expression> condition,
         std::unique_ptr<Statement> body
     )
@@ -135,7 +135,7 @@ public:
         , m_body{ std::move(body) }
     { }
 
-    virtual ~While() { };
+    virtual ~WhileStmt() { };
 
     std::any accept(Visitor& visitor) override {
         return visitor.visitWhileStatement(*this);
