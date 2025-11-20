@@ -23,11 +23,11 @@ assignment      -> <IDENTIFIER> "=" <assignment>
                     | <logical_or>
 logical_or      -> <logical_and> "or" <logical_and>;
 logical_and     -> <equality> "and" <equality>;
-equality        -> <comparision> != | == <comparision>;
-comparision     -> <term> > | >= | < | <= <term>;
-term            -> <factor> - | + <factor>;
-factor          -> <unary> / | * <unary>;
-unary           -> (! | -) <unary> | <call>;
+equality        -> <comparision> "!=" | "==" <comparision>;
+comparision     -> <term> > | ">=" | "<" | "<=" <term>;
+term            -> <factor> "-" | "+" <factor>;
+factor          -> <unary> "/" | "*" <unary>;
+unary           -> ("!" | "-") <unary> | <call>;
 call            -> <primary> "(" <arguments> ")";
 primary         -> <NUMBER> | <STRING>
                     | "true" | "false" | "nil"
