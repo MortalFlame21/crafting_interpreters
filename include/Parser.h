@@ -27,11 +27,13 @@ equality        -> <comparision> != | == <comparision>;
 comparision     -> <term> > | >= | < | <= <term>;
 term            -> <factor> - | + <factor>;
 factor          -> <unary> / | * <unary>;
-unary           -> (! | -) <unary> | <primary>;
+unary           -> (! | -) <unary> | <call>;
+call            -> <primary> "(" <arguments> ")";
 primary         -> <NUMBER> | <STRING>
                     | "true" | "false" | "nil"
                     | "(" <expression> ")"
                     | <IDENTIFIER>;
+arguments       -> <expression> "," <expression>;
 */
 
 #include <string>
