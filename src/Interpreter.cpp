@@ -257,7 +257,7 @@ std::any Interpreter::visitLogical(Logical& logical) {
     return evaluate(logical.m_right.get());
 }
 
-std::any Interpreter::visitWhileStatement(WhileStmt& stmt) {
+std::any Interpreter::visitWhileStmt(WhileStmt& stmt) {
     while (isTruthy(evaluate(stmt.m_condition.get()))) {
         execute(stmt.m_body.get());
     }

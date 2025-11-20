@@ -27,7 +27,7 @@ public:
         virtual std::any visitVariableStmt(VariableStmt& stmt) = 0;
         virtual std::any visitBlockStmt(BlockStmt& stmt) = 0;
         virtual std::any visitIfStatement(IfStmt& stmt) = 0;
-        virtual std::any visitWhileStatement(WhileStmt& stmt) = 0;
+        virtual std::any visitWhileStmt(WhileStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -138,7 +138,7 @@ public:
     virtual ~WhileStmt() { };
 
     std::any accept(Visitor& visitor) override {
-        return visitor.visitWhileStatement(*this);
+        return visitor.visitWhileStmt(*this);
     }
 
     friend class AstPrinter;
