@@ -93,6 +93,25 @@ void Parser::synchronise() {
     }
 }
 
+std::unique_ptr<Expression> Parser::finishCall(std::unique_ptr<Expression> callee) {
+    std::vector<std::unique_ptr<Expression>> args {};
+
+    if (!check(Token::Type::RIGHT_PAREN)) {
+        do {
+            if (args.size() >= MAX_ARG_SIZE)
+                error(peek(), "Can't have more than 255 arguments");
+            args.push_back(expression());
+        }
+        while (match({ Token::Type::COMMA }));
+    }
+
+    auto paren { consume(Token::Type::RIGHT_PAREN, "Expect ')' after arguments")};
+
+    return std::make_unique<Expression> (
+        std::move(callee), std::move(paren), std::move(args)
+    );
+}
+
 std::unique_ptr<Statement> Parser::declaration() {
     try {
         if (match({ Token::Type::VAR })) return varDeclaration();
@@ -359,7 +378,17 @@ std::unique_ptr<Expression> Parser::unary() {
         return std::make_unique<Unary>(std::move(right), operator_);
     }
 
-    return primary();
+    return call();
+}
+
+std::unique_ptr<Expression> Parser::call() {
+    auto expr { primary() };
+
+    while (match({ Token::Type::LEFT_PAREN })) {
+        expr = finishCall(std::move(expr));
+    }
+
+    expr;
 }
 
 std::unique_ptr<Expression> Parser::primary() {

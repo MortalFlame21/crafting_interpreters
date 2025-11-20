@@ -45,6 +45,8 @@ arguments       -> <expression> "," <expression>;
 #include "Expression.h"
 #include "Statement.h"
 
+constexpr int MAX_ARG_SIZE { 255 };
+
 class Parser {
 public:
     Parser(std::vector<Token> tokens);
@@ -68,6 +70,8 @@ private:
     Token consume(Token::Type type, const std::string& msg);
     ParseError error(Token token, const std::string& msg);
     void synchronise();
+    std::unique_ptr<Expression> finishCall(std::unique_ptr<Expression> callee);
+
 
     std::unique_ptr<Statement> declaration();
     std::unique_ptr<Statement> varDeclaration();
@@ -87,6 +91,7 @@ private:
     std::unique_ptr<Expression> term();
     std::unique_ptr<Expression> factor();
     std::unique_ptr<Expression> unary();
+    std::unique_ptr<Expression> call();
     std::unique_ptr<Expression> primary();
 
     const std::vector<Token> m_tokens{};
