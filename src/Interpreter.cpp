@@ -5,6 +5,7 @@
 #include "Interpreter.h"
 #include "Lox.h"
 #include "Environment.h"
+#include "Callable.h"
 
 std::any Interpreter::visitBinary(Binary& binary) {
     std::any left { evaluate(binary.m_left.get()) };
@@ -262,4 +263,30 @@ std::any Interpreter::visitWhileStmt(WhileStmt& stmt) {
         execute(stmt.m_body.get());
     }
     return {};
+}
+
+std::any Interpreter::visitCall(Call& call) {
+    auto callee { evaluate(call.m_callee.get()) };
+
+    std::vector<std::any> args {};
+    for (auto& arg : call.m_arguments) {
+        args.push_back(evaluate(arg.get()));
+    }
+
+    if (callee.type() != typeid(Callable)) {
+        throw RuntimeError (
+            call.m_parenthesis, "Can only call functions and classes"
+        );
+    }
+
+    auto function { std::any_cast<Callable>(callee) };
+
+    if (args.size() != function.arity()) {
+        throw RuntimeError (
+            call.m_parenthesis,
+            "Expected .arity() arguments but got .size() arguments"
+        );
+    }
+
+    return function.call(*this, args);
 }
