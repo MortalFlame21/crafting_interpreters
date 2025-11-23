@@ -284,7 +284,8 @@ std::any Interpreter::visitCall(Call& call) {
     if (args.size() != function.arity()) {
         throw RuntimeError (
             call.m_parenthesis,
-            "Expected .arity() arguments but got .size() arguments"
+            "Expected " + std::to_string(function.arity()) +
+            "arguments but got " + std::to_string(args.size()) + "arguments"
         );
     }
 

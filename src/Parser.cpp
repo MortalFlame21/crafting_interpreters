@@ -99,7 +99,8 @@ std::unique_ptr<Expression> Parser::finishCall(std::unique_ptr<Expression> calle
     if (!check(Token::Type::RIGHT_PAREN)) {
         do {
             if (args.size() >= MAX_ARG_SIZE)
-                error(peek(), "Can't have more than 255 arguments");
+                error(peek(), "Can't have more than" + std::to_string(MAX_ARG_SIZE)
+                    + " arguments");
             args.push_back(expression());
         }
         while (match({ Token::Type::COMMA }));
