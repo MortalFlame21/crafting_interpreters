@@ -7,6 +7,9 @@
 
 class Callable {
 public:
+    Callable() {}
+    virtual ~Callable() {}
+
     virtual std::any call(Interpreter interpreter, [[maybe_unused]] std::vector<std::any> args) = 0;
     virtual std::size_t arity() = 0;
 };
@@ -14,6 +17,7 @@ public:
 class ClockCallable : public Callable {
 public:
     ClockCallable() {}
+    virtual ~ClockCallable() {}
 
     std::any call(Interpreter interpreter, [[maybe_unused]] std::vector<std::any> args) override;
     std::size_t arity() override;
