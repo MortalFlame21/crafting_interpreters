@@ -58,6 +58,6 @@ private:
     void checkNumberOperands(Token operator_, std::any left, std::any right);
     std::string str(std::any object);
 
-    std::shared_ptr<Environment> m_environment {};
     std::shared_ptr<Environment> m_globals {};
+    std::shared_ptr<Environment> m_environment {};
 };
