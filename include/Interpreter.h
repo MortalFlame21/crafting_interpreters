@@ -9,6 +9,7 @@
 #include "Expression.h"
 #include "Statement.h"
 #include "Environment.h"
+#include "Callable.h"
 
 class Interpreter : public Expression::Visitor, public Statement::Visitor {
 public:
@@ -19,6 +20,12 @@ public:
 
         Token m_token;
     };
+
+    Interpreter()
+        : m_globals { std::make_shared<Environment>() }
+        , m_environment { std::make_shared<Environment>(m_globals) } {
+        m_globals->define("clock", std::make_any<ClockCallable>());
+    }
 
     // expressions
 	std::any visitBinary(Binary& binary) override;
@@ -51,5 +58,6 @@ private:
     void checkNumberOperands(Token operator_, std::any left, std::any right);
     std::string str(std::any object);
 
-    std::shared_ptr<Environment> m_environment { std::make_shared<Environment>() };
+    std::shared_ptr<Environment> m_environment {};
+    std::shared_ptr<Environment> m_globals {};
 };
