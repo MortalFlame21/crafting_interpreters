@@ -273,21 +273,21 @@ std::any Interpreter::visitCall(Call& call) {
         args.push_back(evaluate(arg.get()));
     }
 
-    if (callee.type() != typeid(Callable)) {
+    if (callee.type() != typeid(std::shared_ptr<Callable>)) {
         throw RuntimeError (
             call.m_parenthesis, "Can only call functions and classes"
         );
     }
 
-    auto function { std::any_cast<Callable>(callee) };
+    auto function { std::any_cast<std::shared_ptr<Callable>>(callee) };
 
-    if (args.size() != function.arity()) {
+    if (args.size() != function->arity()) {
         throw RuntimeError (
             call.m_parenthesis,
-            "Expected " + std::to_string(function.arity()) +
+            "Expected " + std::to_string(function->arity()) +
             "arguments but got " + std::to_string(args.size()) + "arguments"
         );
     }
 
-    return function.call(*this, args);
+    return function->call(*this, args);
 }
