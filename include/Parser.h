@@ -4,7 +4,12 @@
 the grammar
 
 program         -> <declaration>;
-declaration     -> <var_declaration> | <statement>;
+declaration     -> <fun_declaration> | <var_declaration>
+                    | <statement>;
+fun_declaration -> "fun" <function>;
+function        -> <IDENTIFIER> "(" <parameters> ")"
+                    <block_stmt>;
+parameters       -> <IDENTIFIER> "," <IDENTIFIER>;
 var_declaration -> "var" <IDENTIFIER> "=" <expression> ";";
 statement       -> <expression_stmt> | <for_stmt>
                     | <if_stmt> | <print_stmt>
@@ -71,7 +76,6 @@ private:
     ParseError error(Token token, const std::string& msg);
     void synchronise();
     std::unique_ptr<Expression> finishCall(std::unique_ptr<Expression> callee);
-
 
     std::unique_ptr<Statement> declaration();
     std::unique_ptr<Statement> varDeclaration();
