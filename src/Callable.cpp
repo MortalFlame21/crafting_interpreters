@@ -29,7 +29,7 @@ std::any FunctionCallable::call(
 ) {
     std::shared_ptr<Environment> env { interpreter.m_globals };
 
-    int i {};
+    std::size_t i {};
     for (auto& decl : m_declaration->m_params)
         env->define(decl.m_lexeme, args[i++]);
 
