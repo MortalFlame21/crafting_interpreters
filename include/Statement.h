@@ -11,6 +11,7 @@ class VariableStmt;
 class BlockStmt;
 class IfStmt;
 class WhileStmt;
+class FunctionStmt;
 
 class Statement {
 public:
@@ -28,6 +29,7 @@ public:
         virtual std::any visitBlockStmt(BlockStmt& stmt) = 0;
         virtual std::any visitIfStatement(IfStmt& stmt) = 0;
         virtual std::any visitWhileStmt(WhileStmt& stmt) = 0;
+        virtual std::any visitFunctionStmt(FunctionStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -146,4 +148,30 @@ public:
 private:
     std::unique_ptr<Expression> m_condition;
     std::unique_ptr<Statement> m_body;
+};
+
+class FunctionStmt : public Statement {
+public:
+    FunctionStmt (
+        Token name,
+        std::vector<Token> params,
+        std::vector<std::unique_ptr<Statement>> body
+    )
+        : m_name{ name }
+        , m_params{ std::move(params) }
+        , m_body{ std::move(body) }
+    { }
+
+    virtual ~FunctionStmt() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitFunctionStmt(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+private:
+    Token m_name;
+    std::vector<Token> m_params;
+    std::vector<std::unique_ptr<Statement>> m_body;
 };
