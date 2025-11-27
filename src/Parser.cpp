@@ -108,7 +108,7 @@ std::unique_ptr<Expression> Parser::finishCall(std::unique_ptr<Expression> calle
 
     auto paren { consume(Token::Type::RIGHT_PAREN, "Expect ')' after arguments")};
 
-    return std::make_unique<Expression> (
+    return std::make_unique<Call> (
         std::move(callee), std::move(paren), std::move(args)
     );
 }
@@ -389,7 +389,7 @@ std::unique_ptr<Expression> Parser::call() {
         expr = finishCall(std::move(expr));
     }
 
-    expr;
+    return expr;
 }
 
 std::unique_ptr<Expression> Parser::primary() {
