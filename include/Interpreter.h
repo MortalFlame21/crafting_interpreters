@@ -44,6 +44,7 @@ public:
     std::any visitBlockStmt(BlockStmt& stmt) override;
     std::any visitIfStatement(IfStmt& stmt) override;
     std::any visitWhileStmt(WhileStmt& stmt) override;
+    std::any visitFunctionStmt(FunctionStmt& stmt) override;
 
     void interpret(std::vector<std::unique_ptr<Statement>> statements);
     void execute(Statement* stmt);

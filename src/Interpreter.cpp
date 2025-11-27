@@ -294,3 +294,7 @@ std::any Interpreter::visitCall(Call& call) {
 
     return function->call(*this, args);
 }
+
+std::any visitFunctionStmt(FunctionStmt& stmt) {
+    return {};
+}
