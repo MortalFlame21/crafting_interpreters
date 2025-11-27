@@ -1,6 +1,7 @@
 #pragma once
 
 #include <any>
+#include <string>
 #include <vector>
 
 class Interpreter;
@@ -15,6 +16,7 @@ public:
         [[maybe_unused]] std::vector<std::any> args
     ) = 0;
     virtual std::size_t arity() = 0;
+    virtual std::string str() { return "<function>"; }
 };
 
 class ClockCallable : public Callable {

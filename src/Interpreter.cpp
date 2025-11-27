@@ -167,6 +167,9 @@ std::string Interpreter::str(std::any object) {
     else if (object.type() == typeid(bool)) {
         return std::any_cast<bool>(object) ? "true" : "false";
     }
+    else if (object.type() == typeid(std::shared_ptr<Callable>)) {
+        return std::any_cast<std::shared_ptr<Callable>>(object)->str();
+    }
 
     // most likely a string??
     return std::any_cast<std::string>(object);
