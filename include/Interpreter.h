@@ -52,6 +52,8 @@ public:
         const std::vector<std::unique_ptr<Statement>>& statements,
         std::shared_ptr<Environment> environment
     );
+
+    friend class FunctionCallable;
 private:
     std::any evaluate(Expression* expression);
     bool isTruthy(std::any object);

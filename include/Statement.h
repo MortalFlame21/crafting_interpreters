@@ -170,6 +170,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class FunctionCallable;
 private:
     Token m_name;
     std::vector<Token> m_params;
