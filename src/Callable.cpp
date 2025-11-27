@@ -1,12 +1,14 @@
 #include <chrono>
 
 #include "Callable.h"
+#include "Interpreter.h"
 
 // Begin ClockCallable
 
 // get time in seconds? (double?) since epoch.
-std::any ClockCallable::call(
-    Interpreter interpreter, [[maybe_unused]] std::vector<std::any> args
+std::any ClockCallable::call (
+    [[maybe_unused]] Interpreter interpreter,
+    [[maybe_unused]] std::vector<std::any> args
 ) {
     using Clock = std::chrono::steady_clock;
     auto time { Clock::now() };
