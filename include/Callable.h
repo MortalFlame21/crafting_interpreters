@@ -3,6 +3,9 @@
 #include <any>
 #include <string>
 #include <vector>
+#include <memory>
+
+#include "Statement.h"
 
 class Interpreter;
 
@@ -33,7 +36,7 @@ public:
 
 class FunctionCallable : public Callable {
 public:
-    FunctionCallable(std::unique_ptr<FunctionStmt> declaration)
+    FunctionCallable(std::shared_ptr<FunctionStmt> declaration)
         : m_declaration { std::move(declaration) }
     { }
 
@@ -44,5 +47,5 @@ public:
     std::size_t arity() override;
     virtual std::string str() override;
 private:
-    std::unique_ptr<FunctionStmt> m_declaration;
+    std::shared_ptr<FunctionStmt> m_declaration;
 };
