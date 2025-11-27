@@ -24,7 +24,8 @@ public:
     Interpreter()
         : m_globals { std::make_shared<Environment>() }
         , m_environment { std::make_shared<Environment>(m_globals) } {
-        m_globals->define("clock", std::make_shared<ClockCallable>());
+        std::shared_ptr<Callable> clock { std::make_shared<ClockCallable>() };
+        m_globals->define("clock", clock);
     }
 
     // expressions
