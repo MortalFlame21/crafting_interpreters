@@ -115,12 +115,37 @@ std::unique_ptr<Expression> Parser::finishCall(std::unique_ptr<Expression> calle
 
 std::unique_ptr<Statement> Parser::declaration() {
     try {
+        if (match({ Token::Type::FUN })) return function("function");
         if (match({ Token::Type::VAR })) return varDeclaration();
         return statement();
     } catch (ParseError& e) {
         synchronise();
         return {};
     }
+}
+
+std::unique_ptr<Statement> Parser::function(const std::string& kind) {
+    auto name { consume(Token::Type::IDENTIFIER, "Expect " + kind + " name") };
+
+    consume(Token::Type::LEFT_PAREN, "Expect '(' after " + kind + " name");
+    std::vector<Token> params {};
+    if (!check({ Token::Type::ASTERISK })) {
+        do {
+            if (params.size() >= MAX_ARG_SIZE)
+                error(peek(), "Can't have more than 255 parameters");
+
+            params.push_back (
+                consume(Token::Type::IDENTIFIER, "Expect parameter name")
+            );
+        }
+        while ( match({ Token::Type::COMMA }));
+    }
+    consume(Token::Type::RIGHT_PAREN, "Expect ')' after " + kind + " name");
+
+    consume(Token::Type::LEFT_BRACE, "Expect '{' before " + kind + " body");
+    auto body { block() };
+
+    return std::make_unique<FunctionStmt>(name, params, std::move(body));
 }
 
 std::unique_ptr<Statement> Parser::varDeclaration() {
