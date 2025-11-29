@@ -161,8 +161,15 @@ public:
         , m_params{ std::move(params) }
         , m_body{ std::move(body) }
     { }
-
     virtual ~FunctionStmt() { };
+
+    // explicitly define the move ctor and move assignment ctor.
+    FunctionStmt(FunctionStmt&&) = default;
+    FunctionStmt& operator=(FunctionStmt&&) = default;
+
+    // disallow copy ctor and copy assignment ctor.
+    FunctionStmt(const FunctionStmt&) = delete;
+    FunctionStmt& operator=(const FunctionStmt&) = delete;
 
     std::any accept(Visitor& visitor) override {
         return visitor.visitFunctionStmt(*this);
