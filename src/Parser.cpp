@@ -129,7 +129,7 @@ std::unique_ptr<Statement> Parser::function(const std::string& kind) {
 
     consume(Token::Type::LEFT_PAREN, "Expect '(' after " + kind + " name");
     std::vector<Token> params {};
-    if (!check({ Token::Type::ASTERISK })) {
+    if (!check({ Token::Type::RIGHT_PAREN })) {
         do {
             if (params.size() >= MAX_ARG_SIZE)
                 error(peek(), "Can't have more than 255 parameters");
