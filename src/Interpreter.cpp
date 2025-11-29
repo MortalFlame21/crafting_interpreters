@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <any>
 
 #include "Lexer.h"
@@ -295,6 +296,10 @@ std::any Interpreter::visitCall(Call& call) {
     return function->call(*this, args);
 }
 
-std::any visitFunctionStmt(FunctionStmt& stmt) {
+std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
+    auto func { std::make_shared<FunctionCallable> (
+        std::make_unique<FunctionStmt>(std::move(stmt))
+    )};
+    m_environment->define(stmt.m_name.m_lexeme, func);
     return {};
 }
