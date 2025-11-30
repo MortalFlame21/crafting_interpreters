@@ -27,7 +27,7 @@ std::any FunctionCallable::call(
     [[maybe_unused]] Interpreter& interpreter,
     [[maybe_unused]] std::vector<std::any> args
 ) {
-    std::shared_ptr<Environment> env { interpreter.m_globals };
+    auto env { std::make_shared<Environment>(interpreter.m_globals) };
 
     std::size_t i {};
     for (auto& decl : m_declaration->m_params)
