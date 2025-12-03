@@ -160,6 +160,7 @@ std::unique_ptr<Statement> Parser::varDeclaration() {
 }
 
 std::unique_ptr<Statement> Parser::statement() {
+    if (match({ Token::Type::RETURN })) return returnStatement();
     if (match({ Token::Type::FOR })) return forStatement();
     if (match({ Token::Type::IF })) return ifStatement();
     if (match({ Token::Type::WHILE })) return whileStatement();
@@ -213,6 +214,13 @@ std::unique_ptr<Statement> Parser::forStatement() {
     }
 
     return body;
+}
+
+std::unique_ptr<Statement> Parser::returnStatement() {
+    auto keyword { previous() };
+    auto value { (!check( Token::Type::SEMICOLON )) ? expression() : nullptr };
+    consume(Token::Type::SEMICOLON, "Expect ';' after return value");
+    return std::make_unique<Statement>(keyword, value);
 }
 
 std::unique_ptr<Statement> Parser::whileStatement() {

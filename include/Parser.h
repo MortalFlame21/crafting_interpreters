@@ -84,6 +84,7 @@ private:
     std::unique_ptr<Statement> statement();
     std::unique_ptr<Statement> function(const std::string& kind);
     std::unique_ptr<Statement> forStatement();
+    std::unique_ptr<Statement> returnStatement();
     std::unique_ptr<Statement> whileStatement();
     std::unique_ptr<Statement> ifStatement();
     std::vector<std::unique_ptr<Statement>> block();
