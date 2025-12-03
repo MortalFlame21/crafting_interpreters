@@ -13,7 +13,9 @@ parameters       -> <IDENTIFIER> "," <IDENTIFIER>;
 var_declaration -> "var" <IDENTIFIER> "=" <expression> ";";
 statement       -> <expression_stmt> | <for_stmt>
                     | <if_stmt> | <print_stmt>
-                    | <while_stmt> | <block_stmt>;
+                    | <return_stmt> | | <while_stmt>
+                    | <block_stmt>;
+return_stmt     -> "return" <expression> ";";
 for_stmt        -> "for" "(" <var_declaration>
                     | <expression_stmt> ";" <expression> ";"
                     <expression> ")" <statement>;
