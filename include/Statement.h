@@ -12,6 +12,7 @@ class BlockStmt;
 class IfStmt;
 class WhileStmt;
 class FunctionStmt;
+class ReturnStmt;
 
 class Statement {
 public:
@@ -30,6 +31,7 @@ public:
         virtual std::any visitIfStatement(IfStmt& stmt) = 0;
         virtual std::any visitWhileStmt(WhileStmt& stmt) = 0;
         virtual std::any visitFunctionStmt(FunctionStmt& stmt) = 0;
+        virtual std::any visitReturnStmt(ReturnStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -182,4 +184,27 @@ private:
     Token m_name;
     std::vector<Token> m_params;
     std::vector<std::unique_ptr<Statement>> m_body;
+};
+
+class ReturnStmt : public Expression {
+public:
+    ReturnStmt (
+        Token keyword,
+        std::unique_ptr<Expression> value
+    )
+        : m_keyword{ keyword }
+        , m_value{ std::move(value) }
+    { }
+
+    virtual ~ReturnStmt() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitReturnStmt(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+private:
+    Token m_keyword;
+    std::unique_ptr<Expression> m_value;
 };
