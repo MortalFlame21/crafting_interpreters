@@ -33,7 +33,12 @@ std::any FunctionCallable::call(
     for (auto& decl : m_declaration->m_params)
         env->define(decl.m_lexeme, args[i++]);
 
-    interpreter.executeBlock(m_declaration->m_body, env);
+    try {
+        interpreter.executeBlock(m_declaration->m_body, env);
+    }
+    catch (const ReturnStmtStackError& returnValue){
+        return returnValue.m_value;
+    }
     return {};
 }
 
