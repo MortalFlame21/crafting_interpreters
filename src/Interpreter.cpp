@@ -306,6 +306,6 @@ std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
 }
 
 std::any Interpreter::visitReturnStmt(ReturnStmt& stmt) {
-    auto value { (!stmt.m_value) ? evaluate(stmt.m_value.get()) : std::any() };
+    auto value { (stmt.m_value) ? evaluate(stmt.m_value.get()) : std::any() };
     throw ReturnStmtStackError(value);
 }
