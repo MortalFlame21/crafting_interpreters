@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <stdexcept>
 
 #include "Statement.h"
 
@@ -48,4 +49,15 @@ public:
     virtual std::string str() override;
 private:
     std::unique_ptr<FunctionStmt> m_declaration;
+};
+
+// class used to be able to easily unwind the stack to return value
+class ReturnStmtStackError : public std::runtime_error {
+public:
+    ReturnStmtStackError(std::any& value)
+        : std::runtime_error("ReturnStmtStackError.")
+        , m_value{ value }
+    { };
+
+    std::any m_value;
 };
