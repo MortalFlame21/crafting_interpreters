@@ -304,3 +304,8 @@ std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
     m_environment->define(name, func);
     return {};
 }
+
+std::any Interpreter::visitReturnStmt(ReturnStmt& stmt) {
+    auto value { (!stmt.m_value) ? evaluate(stmt.m_value.get()) : std::any() };
+    throw ReturnStmtStackError(value);
+}
