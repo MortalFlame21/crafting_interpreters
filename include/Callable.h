@@ -9,6 +9,7 @@
 #include "Statement.h"
 
 class Interpreter;
+class Environment;
 
 class Callable {
 public:
@@ -37,8 +38,12 @@ public:
 
 class FunctionCallable : public Callable {
 public:
-    FunctionCallable(std::unique_ptr<FunctionStmt> declaration)
+    FunctionCallable(
+        std::unique_ptr<FunctionStmt> declaration,
+        std::shared_ptr<Environment> closure
+    )
         : m_declaration { std::move(declaration) }
+        , m_closure { closure }
     { }
 
     std::any call(
@@ -49,6 +54,7 @@ public:
     virtual std::string str() override;
 private:
     std::unique_ptr<FunctionStmt> m_declaration;
+    std::shared_ptr<Environment> m_closure;
 };
 
 // class used to be able to easily unwind the stack to return value

@@ -299,7 +299,8 @@ std::any Interpreter::visitCall(Call& call) {
 std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
     auto name { stmt.m_name.m_lexeme };
     std::shared_ptr<Callable> func { std::make_shared<FunctionCallable> (
-        std::make_unique<FunctionStmt>(std::move(stmt))
+        std::make_unique<FunctionStmt>(std::move(stmt)),
+        m_environment
     )};
     m_environment->define(name, func);
     return {};
