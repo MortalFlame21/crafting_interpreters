@@ -220,7 +220,7 @@ std::unique_ptr<Statement> Parser::returnStatement() {
     auto keyword { previous() };
     auto value { (!check( Token::Type::SEMICOLON )) ? expression() : nullptr };
     consume(Token::Type::SEMICOLON, "Expect ';' after return value");
-    return std::make_unique<Statement>(keyword, value);
+    return std::make_unique<ReturnStmt>(keyword, std::move(value));
 }
 
 std::unique_ptr<Statement> Parser::whileStatement() {
