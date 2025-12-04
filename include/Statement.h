@@ -186,7 +186,7 @@ private:
     std::vector<std::unique_ptr<Statement>> m_body;
 };
 
-class ReturnStmt : public Expression {
+class ReturnStmt : public Statement {
 public:
     ReturnStmt (
         Token keyword,
