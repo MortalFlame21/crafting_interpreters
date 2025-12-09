@@ -4,11 +4,18 @@
 the grammar
 
 program         -> <declaration>;
-declaration     -> <var_declaration> | <statement>;
+declaration     -> <fun_declaration> | <var_declaration>
+                    | <statement>;
+fun_declaration -> "fun" <function>;
+function        -> <IDENTIFIER> "(" <parameters> ")"
+                    <block_stmt>;
+parameters       -> <IDENTIFIER> "," <IDENTIFIER>;
 var_declaration -> "var" <IDENTIFIER> "=" <expression> ";";
 statement       -> <expression_stmt> | <for_stmt>
                     | <if_stmt> | <print_stmt>
-                    | <while_stmt> | <block_stmt>;
+                    | <return_stmt> | | <while_stmt>
+                    | <block_stmt>;
+return_stmt     -> "return" <expression> ";";
 for_stmt        -> "for" "(" <var_declaration>
                     | <expression_stmt> ";" <expression> ";"
                     <expression> ")" <statement>;
@@ -23,15 +30,17 @@ assignment      -> <IDENTIFIER> "=" <assignment>
                     | <logical_or>
 logical_or      -> <logical_and> "or" <logical_and>;
 logical_and     -> <equality> "and" <equality>;
-equality        -> <comparision> != | == <comparision>;
-comparision     -> <term> > | >= | < | <= <term>;
-term            -> <factor> - | + <factor>;
-factor          -> <unary> / | * <unary>;
-unary           -> (! | -) <unary> | <primary>;
+equality        -> <comparision> "!=" | "==" <comparision>;
+comparision     -> <term> > | ">=" | "<" | "<=" <term>;
+term            -> <factor> "-" | "+" <factor>;
+factor          -> <unary> "/" | "*" <unary>;
+unary           -> ("!" | "-") <unary> | <call>;
+call            -> <primary> "(" <arguments> ")";
 primary         -> <NUMBER> | <STRING>
                     | "true" | "false" | "nil"
                     | "(" <expression> ")"
                     | <IDENTIFIER>;
+arguments       -> <expression> "," <expression>;
 */
 
 #include <string>
@@ -42,6 +51,8 @@ primary         -> <NUMBER> | <STRING>
 #include "Lexer.h"
 #include "Expression.h"
 #include "Statement.h"
+
+constexpr int MAX_ARG_SIZE { 255 };
 
 class Parser {
 public:
@@ -66,11 +77,14 @@ private:
     Token consume(Token::Type type, const std::string& msg);
     ParseError error(Token token, const std::string& msg);
     void synchronise();
+    std::unique_ptr<Expression> finishCall(std::unique_ptr<Expression> callee);
 
     std::unique_ptr<Statement> declaration();
     std::unique_ptr<Statement> varDeclaration();
     std::unique_ptr<Statement> statement();
+    std::unique_ptr<Statement> function(const std::string& kind);
     std::unique_ptr<Statement> forStatement();
+    std::unique_ptr<Statement> returnStatement();
     std::unique_ptr<Statement> whileStatement();
     std::unique_ptr<Statement> ifStatement();
     std::vector<std::unique_ptr<Statement>> block();
@@ -85,6 +99,7 @@ private:
     std::unique_ptr<Expression> term();
     std::unique_ptr<Expression> factor();
     std::unique_ptr<Expression> unary();
+    std::unique_ptr<Expression> call();
     std::unique_ptr<Expression> primary();
 
     const std::vector<Token> m_tokens{};

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <any>
+#include <vector>
 
 #include "Lexer.h"
 
@@ -12,6 +13,7 @@ class Unary;
 class Variable;
 class Assignment;
 class Logical;
+class Call;
 
 class Expression {
 public:
@@ -30,6 +32,7 @@ public:
         virtual std::any visitVariable(Variable& variable) = 0;
         virtual std::any visitAssignment(Assignment& Assignment) = 0;
         virtual std::any visitLogical(Logical& logical) = 0;
+        virtual std::any visitCall(Call& call) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -180,4 +183,30 @@ private:
     std::unique_ptr<Expression> m_left;
     std::unique_ptr<Expression> m_right;
     Token m_operator;
+};
+
+class Call : public Expression {
+public:
+    Call (
+        std::unique_ptr<Expression> callee,
+        Token parenthesis,
+        std::vector<std::unique_ptr<Expression>> arguments
+    )
+        : m_callee{ std::move(callee) }
+        , m_parenthesis{ parenthesis }
+        , m_arguments{ std::move(arguments) }
+    { }
+
+    virtual ~Call() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitCall(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+private:
+    std::unique_ptr<Expression> m_callee;
+    Token m_parenthesis;
+    std::vector<std::unique_ptr<Expression>> m_arguments;
 };
