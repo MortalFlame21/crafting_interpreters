@@ -15,7 +15,7 @@ public:
         : m_enclosing { enclosing }
     { }
 
-    void define(const std::string& name, std::any& value);
+    void define(const std::string& name, const std::any& value);
     std::any get(Token name);
     void assign(Token name, std::any& value);
 private:

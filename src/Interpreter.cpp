@@ -1,10 +1,12 @@
 #include <iostream>
+#include <memory>
 #include <any>
 
 #include "Lexer.h"
 #include "Interpreter.h"
 #include "Lox.h"
 #include "Environment.h"
+#include "Callable.h"
 
 std::any Interpreter::visitBinary(Binary& binary) {
     std::any left { evaluate(binary.m_left.get()) };
@@ -166,6 +168,9 @@ std::string Interpreter::str(std::any object) {
     else if (object.type() == typeid(bool)) {
         return std::any_cast<bool>(object) ? "true" : "false";
     }
+    else if (object.type() == typeid(std::shared_ptr<Callable>)) {
+        return std::any_cast<std::shared_ptr<Callable>>(object)->str();
+    }
 
     // most likely a string??
     return std::any_cast<std::string>(object);
@@ -257,9 +262,51 @@ std::any Interpreter::visitLogical(Logical& logical) {
     return evaluate(logical.m_right.get());
 }
 
-std::any Interpreter::visitWhileStatement(WhileStmt& stmt) {
+std::any Interpreter::visitWhileStmt(WhileStmt& stmt) {
     while (isTruthy(evaluate(stmt.m_condition.get()))) {
         execute(stmt.m_body.get());
     }
     return {};
+}
+
+std::any Interpreter::visitCall(Call& call) {
+    auto callee { evaluate(call.m_callee.get()) };
+
+    std::vector<std::any> args {};
+    for (auto& arg : call.m_arguments) {
+        args.push_back(evaluate(arg.get()));
+    }
+
+    if (callee.type() != typeid(std::shared_ptr<Callable>)) {
+        throw RuntimeError (
+            call.m_parenthesis, "Can only call functions and classes"
+        );
+    }
+
+    auto function { std::any_cast<std::shared_ptr<Callable>>(callee) };
+
+    if (args.size() != function->arity()) {
+        throw RuntimeError (
+            call.m_parenthesis,
+            "Expected " + std::to_string(function->arity()) +
+            "arguments but got " + std::to_string(args.size()) + "arguments"
+        );
+    }
+
+    return function->call(*this, args);
+}
+
+std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
+    auto name { stmt.m_name.m_lexeme };
+    std::shared_ptr<Callable> func { std::make_shared<FunctionCallable> (
+        std::make_unique<FunctionStmt>(std::move(stmt)),
+        m_environment
+    )};
+    m_environment->define(name, func);
+    return {};
+}
+
+std::any Interpreter::visitReturnStmt(ReturnStmt& stmt) {
+    auto value { (stmt.m_value) ? evaluate(stmt.m_value.get()) : std::any() };
+    throw ReturnStmtStackError(value);
 }
