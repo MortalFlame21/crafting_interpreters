@@ -289,7 +289,7 @@ std::any Interpreter::visitCall(Call& call) {
         throw RuntimeError (
             call.m_parenthesis,
             "Expected " + std::to_string(function->arity()) +
-            "arguments but got " + std::to_string(args.size()) + "arguments"
+            " arguments but got " + std::to_string(args.size()) + " arguments"
         );
     }
 
