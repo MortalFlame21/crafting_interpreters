@@ -27,7 +27,9 @@ std::any Resolver::visitVariable(Variable& variable) {
 };
 
 std::any Resolver::visitAssignment(Assignment& assignment) {
-
+    resolve(assignment.m_value.get());
+    resolveLocal(&assignment, assignment.m_name);
+    return {};
 };
 
 std::any Resolver::visitLogical(Logical& logical) {
@@ -39,11 +41,13 @@ std::any Resolver::visitCall(Call& call) {
 };
 
 std::any Resolver::visitExpressionStmt(ExpressionStmt& stmt) {
-
+    resolve(stmt.m_expression);
+    return {};
 };
 
 std::any Resolver::visitPrintStmt(PrintStmt& stmt) {
-
+    resolve(stmt.m_expression);
+    return {};
 };
 
 std::any Resolver::visitVariableStmt(VariableStmt& stmt) {
@@ -61,19 +65,30 @@ std::any Resolver::visitBlockStmt(BlockStmt& stmt) {
 };
 
 std::any Resolver::visitIfStatement(IfStmt& stmt) {
-
+    resolve(stmt.m_condition);
+    resolve(stmt.m_thenBranch);
+    if (stmt.m_thenBranch) resolve(stmt.m_elseBranch);
+    return {};
 };
 
 std::any Resolver::visitWhileStmt(WhileStmt& stmt) {
-
+    resolve(stmt.m_condition);
+    resolve(stmt.m_body);
+    return {};
 };
 
 std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
-
+    declare(stmt.m_name);
+    define(stmt.m_name);
+    resolveFunction(stmt);
+    return {};
 };
 
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
-
+    if (stmt.m_value != null) {
+        resolve(stmt.m_value);
+    }
+    return {};
 };
 
 void Resolver::resolve(std::vector<std::unique_ptr<Statement>> statements) {
@@ -117,4 +132,14 @@ void Resolver::resolveLocal(Expression* expr, Token name) {
             m_interpreter->resolve(expr, m_scopes.size() - 1 - i);
         }
     }
+}
+
+void Resolver::resolveFunction(FunctionStmt function) {
+    beginScope();
+    for (auto& p : function.m_params) {
+        declare(p);
+        define(p);
+    }
+    resolve(function.m_body);
+    endScope();
 }

@@ -41,6 +41,7 @@ private:
     void define(Token token);
     void declare(Token token);
     void resolveLocal(Expression* expr, Token name);
+    void resolveFunction(FunctionStmt function);
 
     std::shared_ptr<Interpreter> m_interpreter;
     std::vector<std::unordered_map<std::string, bool>> m_scopes;
