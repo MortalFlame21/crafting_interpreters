@@ -61,6 +61,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_left;
     std::unique_ptr<Expression> m_right;
@@ -81,6 +82,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_expression;
 };
@@ -116,6 +118,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_right;
     Token m_operator;
@@ -136,6 +139,7 @@ public:
     friend class AstPrinter;
     friend class Interpreter;
     friend class Parser;
+    friend class Resolver;
 private:
     Token m_name;
 };
@@ -154,6 +158,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     Token m_name;
     std::unique_ptr<Expression> m_value;
@@ -205,6 +210,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_callee;
     Token m_parenthesis;
