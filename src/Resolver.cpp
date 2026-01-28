@@ -4,19 +4,24 @@
 #include "Errors.h"
 
 std::any Resolver::visitBinary(Binary& binary) {
-
+    resolve(binary.m_left);
+    resolve(binary.m_right);
+    return {};
 }
-std::any Resolver::visitGrouping(Grouping& grouping) {
 
-};
+std::any Resolver::visitGrouping(Grouping& grouping) {
+    resolve(grouping.m_expression);
+    return {};
+}
 
 std::any Resolver::visitLiteral(Literal& literal) {
-
-};
+    return {};
+}
 
 std::any Resolver::visitUnary(Unary& unary) {
-
-};
+    resolve(unary.m_right);
+    return {};
+}
 
 std::any Resolver::visitVariable(Variable& variable) {
     if (m_scopes.empty() && !m_scopes.front().at(variable.m_name.m_lexeme)) {
@@ -24,72 +29,77 @@ std::any Resolver::visitVariable(Variable& variable) {
     }
     resolveLocal(&variable, variable.m_name);
     return {};
-};
+}
 
 std::any Resolver::visitAssignment(Assignment& assignment) {
     resolve(assignment.m_value.get());
     resolveLocal(&assignment, assignment.m_name);
     return {};
-};
+}
 
 std::any Resolver::visitLogical(Logical& logical) {
-
-};
+    resolve(logical.m_left);
+    resolve(logical.m_right);
+    return {};
+}
 
 std::any Resolver::visitCall(Call& call) {
-
-};
+    resolve(call.m_callee);
+    for (auto& a : call.m_arguments)
+        resolve(a)
+    return {}
+}
 
 std::any Resolver::visitExpressionStmt(ExpressionStmt& stmt) {
     resolve(stmt.m_expression);
     return {};
-};
+}
 
 std::any Resolver::visitPrintStmt(PrintStmt& stmt) {
     resolve(stmt.m_expression);
     return {};
-};
+}
 
 std::any Resolver::visitVariableStmt(VariableStmt& stmt) {
     declare(stmt.m_name);
     if (stmt.m_expression) resolve(stmt.m_expression.get());
     define(stmt.m_name);
     return {};
-};
+}
 
 std::any Resolver::visitBlockStmt(BlockStmt& stmt) {
     beginScope();
     resolve(std::move(stmt.m_statements));
     endScope();
     return {};
-};
+}
 
 std::any Resolver::visitIfStatement(IfStmt& stmt) {
     resolve(stmt.m_condition);
     resolve(stmt.m_thenBranch);
     if (stmt.m_thenBranch) resolve(stmt.m_elseBranch);
     return {};
-};
+}
 
 std::any Resolver::visitWhileStmt(WhileStmt& stmt) {
     resolve(stmt.m_condition);
     resolve(stmt.m_body);
     return {};
-};
+}
 
 std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
     resolveFunction(stmt);
     return {};
-};
+}
 
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
     if (stmt.m_value != null) {
         resolve(stmt.m_value);
     }
     return {};
-};
+}
 
 void Resolver::resolve(std::vector<std::unique_ptr<Statement>> statements) {
     for (auto& s : statements) {
