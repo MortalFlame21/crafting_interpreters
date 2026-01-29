@@ -191,11 +191,20 @@ void Interpreter::execute(Statement* stmt) {
 }
 
 void Interpreter::resolve(Expression* expr, int depth) {
-    m_locals.insert({ std::make_unique<Expression>(expr), depth });
+    m_locals.insert({ expr, depth });
+}
+
+std::any Interpreter::lookUpVariable(Token name, Expression* expr) {
+    if (auto distance { m_locals.find( expr )}; distance != m_locals.end()) {
+        return m_environment->getAt(distance->second, name.m_lexeme);
+    }
+    else {
+        return m_globals->get(name);
+    }
 }
 
 std::any Interpreter::visitVariable(Variable& variable) {
-    return m_environment->get(variable.m_name);
+    return lookUpVariable(variable.m_name, &variable);
 }
 
 std::any Interpreter::visitVariableStmt(VariableStmt& stmt) {
