@@ -16,6 +16,17 @@ std::any Environment::get(Token name) {
     throw Interpreter::RuntimeError(name, "Undefined variable " + name.m_lexeme);
 }
 
+std::any Environment::getAt(int distance, std::string name) {
+    return ancestor(distance)->m_values.find(name)->second;
+}
+
+std::shared_ptr<Environment> Environment::ancestor(int distance) {
+    auto env { std::shared_ptr<Environment>(this) };
+    for (int i {}; i < distance; ++i)
+        env = env->m_enclosing;
+    return env;
+}
+
 void Environment::assign(Token name, std::any& value) {
     if (m_values.find(name.m_lexeme) != m_values.end()) {
         m_values.at(name.m_lexeme) = value;
