@@ -190,6 +190,10 @@ void Interpreter::execute(Statement* stmt) {
     stmt->accept(*this);
 }
 
+void Interpreter::resolve(Expression* expr, int depth) {
+    m_locals.insert({ std::make_unique<Expression>(expr), depth });
+}
+
 std::any Interpreter::visitVariable(Variable& variable) {
     return m_environment->get(variable.m_name);
 }

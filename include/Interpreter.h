@@ -49,6 +49,7 @@ public:
 
     void interpret(std::vector<std::unique_ptr<Statement>> statements);
     void execute(Statement* stmt);
+    void resolve(Expression* expr, int depth);
     void executeBlock (
         const std::vector<std::unique_ptr<Statement>>& statements,
         std::shared_ptr<Environment> environment
@@ -65,4 +66,5 @@ private:
 
     std::shared_ptr<Environment> m_globals {};
     std::shared_ptr<Environment> m_environment {};
+    std::unordered_map<std::unique_ptr<Expression>, int> m_locals {};
 };
