@@ -184,6 +184,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_left;
     std::unique_ptr<Expression> m_right;
