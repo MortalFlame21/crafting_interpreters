@@ -46,8 +46,8 @@ std::any Resolver::visitLogical(Logical& logical) {
 std::any Resolver::visitCall(Call& call) {
     resolve(call.m_callee);
     for (auto& a : call.m_arguments)
-        resolve(a)
-    return {}
+        resolve(a);
+    return {};
 }
 
 std::any Resolver::visitExpressionStmt(ExpressionStmt& stmt) {
@@ -95,9 +95,8 @@ std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
 }
 
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
-    if (stmt.m_value != null) {
+    if (!stmt.m_value)
         resolve(stmt.m_value);
-    }
     return {};
 }
 
@@ -137,19 +136,22 @@ void Resolver::define(Token token) {
 }
 
 void Resolver::resolveLocal(Expression* expr, Token name) {
-    for (int i { m_scopes.size() }; i >= 0; i--) {
-        if (m_scopes[i].find(name.m_lexeme) != m_scopes[i].end()) {
-            m_interpreter->resolve(expr, m_scopes.size() - 1 - i);
+    // use std::ssize() next time (C++20)
+    auto sz { static_cast<ptrdiff_t>(m_scopes.size()) };
+    for (auto i { sz }; i >= 0; --i) {
+        auto j { static_cast<size_t>(i) };
+        if (m_scopes[j].find(name.m_lexeme) != m_scopes[j].end()) {
+            m_interpreter->resolve(expr, static_cast<int>(m_scopes.size() - 1 - j));
         }
     }
 }
 
-void Resolver::resolveFunction(FunctionStmt function) {
+void Resolver::resolveFunction(FunctionStmt* function) {
     beginScope();
-    for (auto& p : function.m_params) {
+    for (auto& p : function->m_params) {
         declare(p);
         define(p);
     }
-    resolve(function.m_body);
+    resolve(std::move(function->m_body));
     endScope();
 }
