@@ -20,6 +20,10 @@ std::any Environment::getAt(int distance, std::string name) {
     return ancestor(distance)->m_values.find(name)->second;
 }
 
+void Environment::assignAt(int distance, Token name, std::any& value) {
+    ancestor(distance)->m_values.insert({ name.m_lexeme, value });
+}
+
 std::shared_ptr<Environment> Environment::ancestor(int distance) {
     auto env { std::shared_ptr<Environment>(this) };
     for (int i {}; i < distance; ++i)
