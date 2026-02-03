@@ -34,6 +34,12 @@ public:
     std::any visitReturnStmt(ReturnStmt& stmt) override;
     void resolve(std::vector<std::unique_ptr<Statement>> statements);
 private:
+    enum class FunctionType {
+        FUNCTION,
+        MAX_FUNCTION_TYPE,
+        NONE = MAX_FUNCTION_TYPE,
+    };
+
     void resolve(Statement* statement);
     void resolve(Expression* expression);
     void beginScope();
@@ -41,8 +47,9 @@ private:
     void define(Token token);
     void declare(Token token);
     void resolveLocal(Expression* expr, Token name);
-    void resolveFunction(FunctionStmt* function);
+    void resolveFunction(FunctionStmt* function, FunctionType type);
 
     std::shared_ptr<Interpreter> m_interpreter;
     std::vector<std::unordered_map<std::string, bool>> m_scopes {};
+    FunctionType m_currentFunction { FunctionType::NONE };
 };

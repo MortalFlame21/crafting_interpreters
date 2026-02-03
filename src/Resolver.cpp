@@ -90,7 +90,7 @@ std::any Resolver::visitWhileStmt(WhileStmt& stmt) {
 std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
-    resolveFunction(&stmt);
+    resolveFunction(&stmt, FunctionType::FUNCTION);
     return {};
 }
 
@@ -127,6 +127,11 @@ void Resolver::declare(Token token) {
     if (m_scopes.empty()) return;
 
     auto scope { m_scopes.front() };
+
+    // if multiple variables, throw error.
+    if (scope.find(token.m_lexeme) != scope.end())
+        Errors::errors(token, "Already a variable with this name in this scope.");
+
     scope.insert({ token.m_lexeme, false });
 }
 
@@ -146,7 +151,10 @@ void Resolver::resolveLocal(Expression* expr, Token name) {
     }
 }
 
-void Resolver::resolveFunction(FunctionStmt* function) {
+void Resolver::resolveFunction(FunctionStmt* function, FunctionType type) {
+    auto enclosingFunction { m_currentFunction };
+    m_currentFunction = type;
+
     beginScope();
     for (auto& p : function->m_params) {
         declare(p);
@@ -154,4 +162,6 @@ void Resolver::resolveFunction(FunctionStmt* function) {
     }
     resolve(std::move(function->m_body));
     endScope();
+
+    m_currentFunction = enclosingFunction;
 }
