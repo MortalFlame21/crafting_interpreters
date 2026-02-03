@@ -218,7 +218,9 @@ std::any Interpreter::visitVariableStmt(VariableStmt& stmt) {
 
 std::any Interpreter::visitAssignment(Assignment& assignment) {
     std::any value { evaluate(assignment.m_value.get()) };
-    if (m_environment)
+    if (auto dist { m_locals.at(&assignment) }; dist)
+        m_environment->assignAt(dist, assignment.m_name, value);
+    else
         m_environment->assign(assignment.m_name, value);
     return value;
 }
