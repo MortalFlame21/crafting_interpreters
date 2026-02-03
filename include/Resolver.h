@@ -32,8 +32,8 @@ public:
     std::any visitWhileStmt(WhileStmt& stmt) override;
     std::any visitFunctionStmt(FunctionStmt& stmt) override;
     std::any visitReturnStmt(ReturnStmt& stmt) override;
-private:
     void resolve(std::vector<std::unique_ptr<Statement>> statements);
+private:
     void resolve(Statement* statement);
     void resolve(Expression* expression);
     void beginScope();
