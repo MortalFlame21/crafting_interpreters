@@ -51,6 +51,8 @@ void Lox::run(std::string_view src) {
     static auto resolver { std::make_unique<Resolver>(interpreter) };
     resolver->resolve(std::move(statements));
 
+    if (hadError) return;
+
     // AstPrinter printer {};
     // std::cout << "*** Start printer details ***\n";
     // std::cout << printer.print(statements.get());

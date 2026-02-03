@@ -95,6 +95,8 @@ std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
 }
 
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
+    if (m_currentFunction == FunctionType::NONE)
+        Errors::errors(stmt.m_keyword, "Can't return from top-level code.");
     if (!stmt.m_value)
         resolve(stmt.m_value.get());
     return {};
