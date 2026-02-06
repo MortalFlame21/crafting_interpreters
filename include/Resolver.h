@@ -50,6 +50,7 @@ private:
     void resolveFunction(FunctionStmt* function, FunctionType type);
 
     std::shared_ptr<Interpreter> m_interpreter;
+    // vector with stack like behaviour. front is bottom, back is top of stack.
     std::vector<std::unordered_map<std::string, bool>> m_scopes {};
     FunctionType m_currentFunction { FunctionType::NONE };
 };

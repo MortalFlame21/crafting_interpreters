@@ -24,7 +24,8 @@ std::any Resolver::visitUnary(Unary& unary) {
 }
 
 std::any Resolver::visitVariable(Variable& variable) {
-    if (m_scopes.empty() && !m_scopes.front().at(variable.m_name.m_lexeme)) {
+    // declared but not defined
+    if (!m_scopes.empty() && !m_scopes.back().at(variable.m_name.m_lexeme)) {
         Errors::errors(variable.m_name, "Can't read local variable in its own initialiser.");
     }
     resolveLocal(&variable, variable.m_name);
@@ -77,7 +78,7 @@ std::any Resolver::visitBlockStmt(BlockStmt& stmt) {
 std::any Resolver::visitIfStatement(IfStmt& stmt) {
     resolve(stmt.m_condition.get());
     resolve(stmt.m_thenBranch.get());
-    if (stmt.m_thenBranch) resolve(stmt.m_elseBranch.get());
+    if (stmt.m_elseBranch) resolve(stmt.m_elseBranch.get());
     return {};
 }
 
@@ -97,7 +98,7 @@ std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
     if (m_currentFunction == FunctionType::NONE)
         Errors::errors(stmt.m_keyword, "Can't return from top-level code.");
-    if (!stmt.m_value)
+    if (stmt.m_value)
         resolve(stmt.m_value.get());
     return {};
 }
@@ -122,13 +123,14 @@ void Resolver::beginScope() {
 }
 
 void Resolver::endScope() {
-    m_scopes.erase(m_scopes.begin());
+    // remove that scope (at the end)
+    m_scopes.pop_back();
 }
 
 void Resolver::declare(Token token) {
     if (m_scopes.empty()) return;
 
-    auto scope { m_scopes.front() };
+    auto& scope { m_scopes.back() };
 
     // if multiple variables, throw error.
     if (scope.find(token.m_lexeme) != scope.end())
@@ -139,16 +141,17 @@ void Resolver::declare(Token token) {
 
 void Resolver::define(Token token) {
     if (m_scopes.empty()) return;
-    m_scopes.front().insert({ token.m_lexeme, true });
+    m_scopes.back().insert_or_assign(token.m_lexeme, true);
 }
 
 void Resolver::resolveLocal(Expression* expr, Token name) {
     // use std::ssize() next time (C++20)
-    auto sz { static_cast<ptrdiff_t>(m_scopes.size()) };
+    auto sz { static_cast<ptrdiff_t>(m_scopes.size()) - 1 };
     for (auto i { sz }; i >= 0; --i) {
         auto j { static_cast<size_t>(i) };
         if (m_scopes[j].find(name.m_lexeme) != m_scopes[j].end()) {
             m_interpreter->resolve(expr, static_cast<int>(m_scopes.size() - 1 - j));
+            return;
         }
     }
 }
