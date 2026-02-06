@@ -36,8 +36,8 @@ public:
 private:
     enum class FunctionType {
         FUNCTION,
-        MAX_FUNCTION_TYPE,
-        NONE = MAX_FUNCTION_TYPE,
+        NONE,
+        MAX_FUNCTION_TYPE = NONE,
     };
 
     void resolve(Statement* statement);
