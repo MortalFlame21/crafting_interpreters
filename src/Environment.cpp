@@ -21,7 +21,7 @@ std::any Environment::getAt(int distance, std::string name) {
 }
 
 void Environment::assignAt(int distance, Token name, std::any& value) {
-    ancestor(distance)->m_values.insert({ name.m_lexeme, value });
+    ancestor(distance)->m_values.insert_or_assign(name.m_lexeme, value);
 }
 
 std::shared_ptr<Environment> Environment::ancestor(int distance) {
