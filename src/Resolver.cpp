@@ -25,8 +25,12 @@ std::any Resolver::visitUnary(Unary& unary) {
 
 std::any Resolver::visitVariable(Variable& variable) {
     // declared but not defined
-    if (!m_scopes.empty() && !m_scopes.back().at(variable.m_name.m_lexeme)) {
-        Errors::errors(variable.m_name, "Can't read local variable in its own initialiser.");
+    if (!m_scopes.empty()
+        && m_scopes.back().find(variable.m_name.m_lexeme) != m_scopes.back().end()
+        && !m_scopes.back()[variable.m_name.m_lexeme]
+    ) {
+        Errors::errors(variable.m_name,
+            "Can't read local variable in its own initialiser.");
     }
     resolveLocal(&variable, variable.m_name);
     return {};
@@ -154,7 +158,8 @@ void Resolver::resolveLocal(Expression* expr, Token name) {
             return;
         }
     }
-}
+    // if not found it is a global
+};
 
 void Resolver::resolveFunction(FunctionStmt* function, FunctionType type) {
     auto enclosingFunction { m_currentFunction };
