@@ -191,16 +191,13 @@ void Interpreter::execute(Statement* stmt) {
 }
 
 void Interpreter::resolve(Expression* expr, int depth) {
-    m_locals.insert({ expr, depth });
+    m_locals.insert_or_assign(expr, depth);
 }
 
 std::any Interpreter::lookUpVariable(Token name, Expression* expr) {
-    if (auto distance { m_locals.find( expr )}; distance != m_locals.end()) {
+    if (auto distance { m_locals.find( expr )}; distance != m_locals.end())
         return m_environment->getAt(distance->second, name.m_lexeme);
-    }
-    else {
-        return m_globals->get(name);
-    }
+    return m_globals->get(name);
 }
 
 std::any Interpreter::visitVariable(Variable& variable) {
@@ -221,7 +218,7 @@ std::any Interpreter::visitAssignment(Assignment& assignment) {
     if (auto dist { m_locals.find(&assignment) }; dist != m_locals.end())
         m_environment->assignAt(dist->second, assignment.m_name, value);
     else
-        m_environment->assign(assignment.m_name, value);
+        m_globals->assign(assignment.m_name, value);
     return value;
 }
 
