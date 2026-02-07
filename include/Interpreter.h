@@ -47,7 +47,7 @@ public:
     std::any visitFunctionStmt(FunctionStmt& stmt) override;
     std::any visitReturnStmt(ReturnStmt& stmt) override;
 
-    void interpret(std::vector<std::unique_ptr<Statement>> statements);
+    void interpret(const std::vector<std::unique_ptr<Statement>>& statements);
     void execute(Statement* stmt);
     void resolve(Expression* expr, int depth);
     std::any lookUpVariable(Token name, Expression* expr);

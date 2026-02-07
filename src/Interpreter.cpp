@@ -138,7 +138,7 @@ void Interpreter::checkNumberOperands (
     throw RuntimeError(operator_, "Operand must be numbers");
 }
 
-void Interpreter::interpret(std::vector<std::unique_ptr<Statement>> statements) {
+void Interpreter::interpret(const std::vector<std::unique_ptr<Statement>>& statements) {
     try {
         for (auto& stmt : statements) {
             execute(stmt.get());
