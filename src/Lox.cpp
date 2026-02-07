@@ -48,17 +48,12 @@ void Lox::run(std::string_view src) {
     if (hadError) return;
 
     static auto interpreter { std::make_shared<Interpreter>() };
-    static auto resolver { std::make_unique<Resolver>(interpreter) };
-    resolver->resolve(std::move(statements));
+    auto resolver { std::make_unique<Resolver>(interpreter) };
+    resolver->resolve(statements);
 
     if (hadError) return;
 
-    // AstPrinter printer {};
-    // std::cout << "*** Start printer details ***\n";
-    // std::cout << printer.print(statements.get());
-    // std::cout << "\n*** End printer details ***\n";
-
-    interpreter->interpret(std::move(statements));
+    interpreter->interpret(statements);
 }
 
 void Lox::runtimeError(Interpreter::RuntimeError& error) {
