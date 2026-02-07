@@ -32,7 +32,7 @@ public:
     std::any visitWhileStmt(WhileStmt& stmt) override;
     std::any visitFunctionStmt(FunctionStmt& stmt) override;
     std::any visitReturnStmt(ReturnStmt& stmt) override;
-    void resolve(std::vector<std::unique_ptr<Statement>> statements);
+    void resolve(const std::vector<std::unique_ptr<Statement>>& statements);
 private:
     enum class FunctionType {
         FUNCTION,

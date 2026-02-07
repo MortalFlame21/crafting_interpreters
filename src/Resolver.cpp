@@ -107,7 +107,7 @@ std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
     return {};
 }
 
-void Resolver::resolve(std::vector<std::unique_ptr<Statement>> statements) {
+void Resolver::resolve(const std::vector<std::unique_ptr<Statement>>& statements) {
     for (auto& s : statements) {
         resolve(s.get());
     }
