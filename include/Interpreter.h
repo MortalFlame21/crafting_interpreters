@@ -23,7 +23,7 @@ public:
 
     Interpreter()
         : m_globals { std::make_shared<Environment>() }
-        , m_environment { std::make_shared<Environment>(m_globals) } {
+        , m_environment { m_globals } {
         std::shared_ptr<Callable> clock { std::make_shared<ClockCallable>() };
         m_globals->define("clock", clock);
     }
