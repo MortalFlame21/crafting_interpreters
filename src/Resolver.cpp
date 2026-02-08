@@ -27,7 +27,7 @@ std::any Resolver::visitVariable(Variable& variable) {
     // declared but not defined
     if (!m_scopes.empty()
         && m_scopes.back().find(variable.m_name.m_lexeme) != m_scopes.back().end()
-        && !m_scopes.back()[variable.m_name.m_lexeme]
+        && !m_scopes.back().at(variable.m_name.m_lexeme)
     ) {
         Errors::errors(variable.m_name,
             "Can't read local variable in its own initialiser.");
@@ -74,7 +74,7 @@ std::any Resolver::visitVariableStmt(VariableStmt& stmt) {
 
 std::any Resolver::visitBlockStmt(BlockStmt& stmt) {
     beginScope();
-    resolve(std::move(stmt.m_statements));
+    resolve(stmt.m_statements);
     endScope();
     return {};
 }
@@ -95,7 +95,7 @@ std::any Resolver::visitWhileStmt(WhileStmt& stmt) {
 std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
-    resolveFunction(&stmt, FunctionType::FUNCTION);
+    resolveFunction(stmt, FunctionType::FUNCTION);
     return {};
 }
 
@@ -132,15 +132,14 @@ void Resolver::endScope() {
 }
 
 void Resolver::declare(Token token) {
+    // global
     if (m_scopes.empty()) return;
 
-    auto& scope { m_scopes.back() };
-
     // if multiple variables, throw error.
-    if (scope.find(token.m_lexeme) != scope.end())
+    if (auto& scope { m_scopes.back() }; scope.find(token.m_lexeme) != scope.end())
         Errors::errors(token, "Already a variable with this name in this scope.");
-
-    scope.insert({ token.m_lexeme, false });
+    else
+        scope.insert({ token.m_lexeme, false });
 }
 
 void Resolver::define(Token token) {
@@ -150,8 +149,8 @@ void Resolver::define(Token token) {
 
 void Resolver::resolveLocal(Expression* expr, Token name) {
     // use std::ssize() next time (C++20)
-    auto sz { static_cast<ptrdiff_t>(m_scopes.size()) - 1 };
-    for (auto i { sz }; i >= 0; --i) {
+    auto sz { static_cast<ptrdiff_t>(m_scopes.size()) };
+    for (auto i { sz - 1 }; i >= 0; --i) {
         auto j { static_cast<size_t>(i) };
         if (m_scopes[j].find(name.m_lexeme) != m_scopes[j].end()) {
             m_interpreter->resolve(expr, static_cast<int>(m_scopes.size() - 1 - j));
@@ -161,16 +160,16 @@ void Resolver::resolveLocal(Expression* expr, Token name) {
     // if not found it is a global
 };
 
-void Resolver::resolveFunction(FunctionStmt* function, FunctionType type) {
+void Resolver::resolveFunction(FunctionStmt& function, FunctionType type) {
     auto enclosingFunction { m_currentFunction };
     m_currentFunction = type;
 
     beginScope();
-    for (auto& p : function->m_params) {
+    for (auto& p : function.m_params) {
         declare(p);
         define(p);
     }
-    resolve(std::move(function->m_body));
+    resolve(function.m_body);
     endScope();
 
     m_currentFunction = enclosingFunction;
