@@ -24,10 +24,10 @@ void Environment::assignAt(int distance, Token name, std::any& value) {
     ancestor(distance)->m_values.insert_or_assign(name.m_lexeme, value);
 }
 
-std::shared_ptr<Environment> Environment::ancestor(int distance) {
-    auto env { std::shared_ptr<Environment>(this) };
+Environment* Environment::ancestor(int distance) {
+    auto env { this };
     for (int i {}; i < distance; ++i)
-        env = env->m_enclosing;
+        env = env->m_enclosing.get();
     return env;
 }
 
