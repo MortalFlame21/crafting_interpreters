@@ -3,11 +3,13 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <memory>
 
 #include "Lexer.h"
 #include "Parser.h"
 #include "AstPrinter.h"
 #include "Interpreter.h"
+#include "Resolver.h"
 
 void Lox::runFile(const std::string& file) {
     std::ifstream ifs { file };
@@ -43,17 +45,15 @@ void Lox::run(std::string_view src) {
     Parser parser { tokens };
     auto statements { parser.parse() };
 
-    if (hadError) {
-        return;
-    }
+    if (hadError) return;
 
-    // AstPrinter printer {};
-    // std::cout << "*** Start printer details ***\n";
-    // std::cout << printer.print(statements.get());
-    // std::cout << "\n*** End printer details ***\n";
+    static auto interpreter { std::make_shared<Interpreter>() };
+    auto resolver { std::make_unique<Resolver>(interpreter) };
+    resolver->resolve(statements);
 
-    static Interpreter interpreter {};
-    interpreter.interpret(std::move(statements));
+    if (hadError) return;
+
+    interpreter->interpret(statements);
 }
 
 void Lox::runtimeError(Interpreter::RuntimeError& error) {

@@ -52,6 +52,7 @@ public:
     }
 
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_expression;
 };
@@ -68,6 +69,7 @@ public:
     }
 
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_expression;
 };
@@ -84,6 +86,7 @@ public:
     }
 
     friend class Interpreter;
+    friend class Resolver;
 private:
     Token m_name;
     std::unique_ptr<Expression> m_expression;
@@ -100,6 +103,7 @@ public:
     }
 
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::vector<std::unique_ptr<Statement>> m_statements;
 };
@@ -123,6 +127,7 @@ public:
     }
 
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_condition;
     std::unique_ptr<Statement> m_thenBranch;
@@ -147,6 +152,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_condition;
     std::unique_ptr<Statement> m_body;
@@ -180,6 +186,7 @@ public:
     friend class AstPrinter;
     friend class Interpreter;
     friend class FunctionCallable;
+    friend class Resolver;
 private:
     Token m_name;
     std::vector<Token> m_params;
@@ -204,6 +211,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     Token m_keyword;
     std::unique_ptr<Expression> m_value;
