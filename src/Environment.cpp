@@ -3,7 +3,7 @@
 #include "Interpreter.h"
 
 void Environment::define(const std::string& name, const std::any& value) {
-    m_values.insert({ name, value });
+    m_values.insert_or_assign(name, value);
 }
 
 std::any Environment::get(Token name) {
