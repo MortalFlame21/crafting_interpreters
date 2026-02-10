@@ -178,7 +178,9 @@ std::vector<Token> Lexer::scanTokens() {
 
     m_tokens.push_back({ Token::Type::EOF_TOKEN, "", {}, m_line });
 
-    // for (auto& t : m_tokens) std::cout << t.str() << "\n";
+    for (auto& t : m_tokens) {
+        std::cout << t.str() << "\n";
+    }
 
     return m_tokens;
 };

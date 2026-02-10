@@ -3,7 +3,7 @@
 #include "Interpreter.h"
 
 void Environment::define(const std::string& name, const std::any& value) {
-    m_values.insert_or_assign(name, value);
+    m_values.insert({ name, value });
 }
 
 std::any Environment::get(Token name) {
@@ -14,21 +14,6 @@ std::any Environment::get(Token name) {
     if (m_enclosing) return m_enclosing->get(name);
 
     throw Interpreter::RuntimeError(name, "Undefined variable " + name.m_lexeme);
-}
-
-std::any Environment::getAt(int distance, std::string name) {
-    return ancestor(distance)->m_values.find(name)->second;
-}
-
-void Environment::assignAt(int distance, Token name, std::any& value) {
-    ancestor(distance)->m_values.insert_or_assign(name.m_lexeme, value);
-}
-
-Environment* Environment::ancestor(int distance) {
-    auto env { this };
-    for (int i {}; i < distance; ++i)
-        env = env->m_enclosing.get();
-    return env;
 }
 
 void Environment::assign(Token name, std::any& value) {

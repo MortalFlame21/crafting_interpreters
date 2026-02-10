@@ -23,7 +23,7 @@ public:
 
     Interpreter()
         : m_globals { std::make_shared<Environment>() }
-        , m_environment { m_globals } {
+        , m_environment { std::make_shared<Environment>(m_globals) } {
         std::shared_ptr<Callable> clock { std::make_shared<ClockCallable>() };
         m_globals->define("clock", clock);
     }
@@ -47,10 +47,8 @@ public:
     std::any visitFunctionStmt(FunctionStmt& stmt) override;
     std::any visitReturnStmt(ReturnStmt& stmt) override;
 
-    void interpret(const std::vector<std::unique_ptr<Statement>>& statements);
+    void interpret(std::vector<std::unique_ptr<Statement>> statements);
     void execute(Statement* stmt);
-    void resolve(Expression* expr, int depth);
-    std::any lookUpVariable(Token name, Expression* expr);
     void executeBlock (
         const std::vector<std::unique_ptr<Statement>>& statements,
         std::shared_ptr<Environment> environment
@@ -67,5 +65,4 @@ private:
 
     std::shared_ptr<Environment> m_globals {};
     std::shared_ptr<Environment> m_environment {};
-    std::unordered_map<Expression*, int> m_locals {};
 };
