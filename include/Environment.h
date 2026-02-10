@@ -20,7 +20,7 @@ public:
     std::any getAt(int distance, std::string name);
     void assignAt(int distance, Token name, std::any& value);
     Environment* ancestor(int distance);
-    void assign(Token name, std::any& value);
+    void assign(Token name, const std::any& value);
 private:
     std::unordered_map<std::string, std::any> m_values {};
     std::shared_ptr<Environment> m_enclosing {};
