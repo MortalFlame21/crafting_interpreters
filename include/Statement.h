@@ -13,6 +13,7 @@ class IfStmt;
 class WhileStmt;
 class FunctionStmt;
 class ReturnStmt;
+class ClassStmt;
 
 class Statement {
 public:
@@ -32,6 +33,7 @@ public:
         virtual std::any visitWhileStmt(WhileStmt& stmt) = 0;
         virtual std::any visitFunctionStmt(FunctionStmt& stmt) = 0;
         virtual std::any visitReturnStmt(ReturnStmt& stmt) = 0;
+        virtual std::any visitClassStmt(ClassStmt& stmt) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -215,4 +217,28 @@ public:
 private:
     Token m_keyword;
     std::unique_ptr<Expression> m_value;
+};
+
+class ClassStmt : public Statement {
+public:
+    ClassStmt (
+        Token name,
+        std::vector<FunctionStmt*> methods
+    )
+        : m_name{ name }
+        , m_methods{ methods }
+    { }
+
+    virtual ~ClassStmt() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitClassStmt(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+    friend class Resolver;
+private:
+    Token m_name;
+    std::vector<FunctionStmt*> m_methods;
 };
