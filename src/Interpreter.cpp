@@ -7,6 +7,7 @@
 #include "Lox.h"
 #include "Environment.h"
 #include "Callable.h"
+#include "LoxClass.h"
 
 std::any Interpreter::visitBinary(Binary& binary) {
     std::any left { evaluate(binary.m_left.get()) };
@@ -325,7 +326,7 @@ std::any Interpreter::visitReturnStmt(ReturnStmt& stmt) {
 
 std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
     m_environment->define(stmt.m_name.m_lexeme, {});
-    auto class_ { std::make_unique<LoxClass>(stmt.m_name.m_lexeme) };
+    auto class_ { std::make_shared<LoxClass>(stmt.m_name.m_lexeme) };
     m_environment->assign(stmt.m_name, class_);
     return {};
 }
