@@ -174,3 +174,9 @@ void Resolver::resolveFunction(FunctionStmt& function, FunctionType type) {
 
     m_currentFunction = enclosingFunction;
 }
+
+std::any Resolver::visitClassStmt(ClassStmt& stmt) {
+    declare(stmt.m_name);
+    define(stmt.m_name);
+    return {};
+}
