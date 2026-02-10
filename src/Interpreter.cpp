@@ -138,7 +138,7 @@ void Interpreter::checkNumberOperands (
     throw RuntimeError(operator_, "Operand must be numbers");
 }
 
-void Interpreter::interpret(std::vector<std::unique_ptr<Statement>> statements) {
+void Interpreter::interpret(const std::vector<std::unique_ptr<Statement>>& statements) {
     try {
         for (auto& stmt : statements) {
             execute(stmt.get());
@@ -190,8 +190,18 @@ void Interpreter::execute(Statement* stmt) {
     stmt->accept(*this);
 }
 
+void Interpreter::resolve(Expression* expr, int depth) {
+    m_locals.insert_or_assign(expr, depth);
+}
+
+std::any Interpreter::lookUpVariable(Token name, Expression* expr) {
+    if (auto distance { m_locals.find( expr )}; distance != m_locals.end())
+        return m_environment->getAt(distance->second, name.m_lexeme);
+    return m_globals->get(name);
+}
+
 std::any Interpreter::visitVariable(Variable& variable) {
-    return m_environment->get(variable.m_name);
+    return lookUpVariable(variable.m_name, &variable);
 }
 
 std::any Interpreter::visitVariableStmt(VariableStmt& stmt) {
@@ -205,8 +215,10 @@ std::any Interpreter::visitVariableStmt(VariableStmt& stmt) {
 
 std::any Interpreter::visitAssignment(Assignment& assignment) {
     std::any value { evaluate(assignment.m_value.get()) };
-    if (m_environment)
-        m_environment->assign(assignment.m_name, value);
+    if (auto dist { m_locals.find(&assignment) }; dist != m_locals.end())
+        m_environment->assignAt(dist->second, assignment.m_name, value);
+    else
+        m_globals->assign(assignment.m_name, value);
     return value;
 }
 
