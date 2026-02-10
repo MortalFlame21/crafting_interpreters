@@ -115,6 +115,7 @@ std::unique_ptr<Expression> Parser::finishCall(std::unique_ptr<Expression> calle
 
 std::unique_ptr<Statement> Parser::declaration() {
     try {
+        if (match({ Token::Type::CLASS })) return classDeclaration();
         if (match({ Token::Type::FUN })) return function("function");
         if (match({ Token::Type::VAR })) return varDeclaration();
         return statement();
@@ -122,6 +123,25 @@ std::unique_ptr<Statement> Parser::declaration() {
         synchronise();
         return {};
     }
+}
+
+std::unique_ptr<Statement> Parser::classDeclaration() {
+    auto name { consume(Token::Type::IDENTIFIER, "Expect class name") };
+
+    consume(Token::Type::LEFT_BRACE, "Expect '{' before class body");
+    std::vector<FunctionStmt*> methods {};
+    while (!check(Token::Type::RIGHT_BRACE) && !isAtEnd()) {
+        // super wack
+        if (auto* d { dynamic_cast<FunctionStmt*>(function("method").get()) }) {
+            methods.push_back(d);
+        }
+        else {
+            Errors::errors(name, "fail to parse method");
+        }
+    }
+    consume(Token::Type::RIGHT_BRACE, "Expect '}' after class body");
+
+    return std::make_unique<ClassStmt>(name, methods);
 }
 
 std::unique_ptr<Statement> Parser::function(const std::string& kind) {

@@ -81,6 +81,7 @@ private:
     std::unique_ptr<Expression> finishCall(std::unique_ptr<Expression> callee);
 
     std::unique_ptr<Statement> declaration();
+    std::unique_ptr<Statement> classDeclaration();
     std::unique_ptr<Statement> varDeclaration();
     std::unique_ptr<Statement> statement();
     std::unique_ptr<Statement> function(const std::string& kind);
