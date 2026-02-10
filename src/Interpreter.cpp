@@ -322,3 +322,10 @@ std::any Interpreter::visitReturnStmt(ReturnStmt& stmt) {
     auto value { (stmt.m_value) ? evaluate(stmt.m_value.get()) : std::any() };
     throw ReturnStmtStackError(value);
 }
+
+std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
+    m_environment->define(stmt.m_name.m_lexeme, {});
+    auto class_ { std::make_unique<LoxClass>(stmt.m_name.m_lexeme) };
+    m_environment->assign(stmt.m_name, class_);
+    return {};
+}
