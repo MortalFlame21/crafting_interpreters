@@ -31,11 +31,11 @@ private:
 class LoxInstance {
 public:
     LoxInstance(LoxClass* class_)
-        : m_class { std::shared_ptr<LoxClass>(class_) } { }
+        : m_class { class_ } { }
 
-private:
-    std::shared_ptr<LoxClass> m_class { };
-    std::ostream& operator<<(std::ostream& out) {
-        return out << "classInstance<" << m_class->m_name << ">";
+    std::string str() {
+        return "classInstance<" + m_class->m_name + ">";
     }
+private:
+    LoxClass* m_class { };
 };
