@@ -3,7 +3,9 @@
 #include <iostream>
 #include <string>
 
-class LoxClass {
+#include "Callable.h"
+
+class LoxClass : public Callable {
 public:
     LoxClass(std::string name)
         : m_name { name } { }
@@ -12,6 +14,12 @@ public:
         return out << "class <" << m_name << ">";
     }
 
+    std::any call (
+        [[maybe_unused]] Interpreter& interpreter,
+        [[maybe_unused]] std::vector<std::any> args
+    ) override;
+    std::size_t arity() override;
+    std::string str() override;
 private:
     std::string m_name;
 };
