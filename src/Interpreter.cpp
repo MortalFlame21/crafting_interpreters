@@ -178,6 +178,9 @@ std::string Interpreter::str(std::any object) {
     else if (object.type() == typeid(std::shared_ptr<LoxInstance>)) {
         return std::any_cast<std::shared_ptr<LoxInstance>>(object)->str();
     }
+    else if (object.type() == typeid(std::shared_ptr<LoxClass>)) {
+        return std::any_cast<std::shared_ptr<LoxClass>>(object)->str();
+    }
     else if (object.type() == typeid(std::string)) {
         return std::any_cast<std::string>(object);
     }

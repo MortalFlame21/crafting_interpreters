@@ -13,5 +13,5 @@ std::size_t LoxClass::arity() {
 }
 
 std::string LoxClass::str() {
-    return "class <" + m_name + ">";
+    return "class<" + m_name + ">";
 }
