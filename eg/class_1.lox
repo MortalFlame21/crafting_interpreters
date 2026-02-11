@@ -1,0 +1,4 @@
+class Bagel {}
+var bagel = Bagel();
+print Bagel; // Prints "class<Bagel>".
+print bagel; // Prints "classInstance<Bagel>".
