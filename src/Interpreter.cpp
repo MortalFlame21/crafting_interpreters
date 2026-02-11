@@ -148,6 +148,9 @@ void Interpreter::interpret(const std::vector<std::unique_ptr<Statement>>& state
     catch (RuntimeError& e) {
         Lox::runtimeError(e);
     }
+    catch (std::runtime_error& e) {
+        std::cout << e.what() << "\n";
+    }
     catch (...) {
         std::cout << "Unexpected error occurred.\n";
     }
@@ -172,9 +175,17 @@ std::string Interpreter::str(std::any object) {
     else if (object.type() == typeid(std::shared_ptr<Callable>)) {
         return std::any_cast<std::shared_ptr<Callable>>(object)->str();
     }
+    else if (object.type() == typeid(std::shared_ptr<LoxInstance>)) {
+        return std::any_cast<std::shared_ptr<LoxInstance>>(object)->str();
+    }
+    else if (object.type() == typeid(std::string)) {
+        return std::any_cast<std::string>(object);
+    }
+    else {
+        throw std::runtime_error("Unable to print object type");
+    }
 
-    // most likely a string??
-    return std::any_cast<std::string>(object);
+
 }
 std::any Interpreter::visitExpressionStmt(ExpressionStmt& stmt) {
     evaluate(stmt.m_expression.get());
@@ -290,23 +301,25 @@ std::any Interpreter::visitCall(Call& call) {
         args.push_back(evaluate(arg.get()));
     }
 
-    if (callee.type() != typeid(std::shared_ptr<Callable>)) {
-        throw RuntimeError (
-            call.m_parenthesis, "Can only call functions and classes"
-        );
-    }
+    // this can either is a Callable (function) or LoxClass (class) std::shared_ptr
+    // throw if otherwise
+    std::shared_ptr<Callable> callable { };
+    if (callee.type() == typeid(std::shared_ptr<Callable>))
+        callable = std::any_cast<std::shared_ptr<Callable>>(callee);
+    else if (callee.type() == typeid(std::shared_ptr<LoxClass>))
+        callable = std::any_cast<std::shared_ptr<LoxClass>>(callee);
+    else
+        throw RuntimeError(call.m_parenthesis, "Can only call functions and classes");
 
-    auto function { std::any_cast<std::shared_ptr<Callable>>(callee) };
-
-    if (args.size() != function->arity()) {
+    if (args.size() != callable->arity()) {
         throw RuntimeError (
             call.m_parenthesis,
-            "Expected " + std::to_string(function->arity()) +
+            "Expected " + std::to_string(callable->arity()) +
             " arguments but got " + std::to_string(args.size()) + " arguments"
         );
     }
 
-    return function->call(*this, args);
+    return callable->call(*this, args);
 }
 
 std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
