@@ -445,7 +445,7 @@ std::unique_ptr<Expression> Parser::call() {
         else if (match({ Token::Type::DOT })) {
             auto name { consume(Token::Type::IDENTIFIER,
                 "Expect property name after '.'") };
-            expr = std::make_unique<Get>(expr, name);
+            expr = std::make_unique<Get>(std::move(expr), name);
         }
     }
 
