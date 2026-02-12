@@ -14,6 +14,7 @@ class Variable;
 class Assignment;
 class Logical;
 class Call;
+class Get;
 
 class Expression {
 public:
@@ -33,6 +34,7 @@ public:
         virtual std::any visitAssignment(Assignment& Assignment) = 0;
         virtual std::any visitLogical(Logical& logical) = 0;
         virtual std::any visitCall(Call& call) = 0;
+        virtual std::any visitGet(Get& get) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -216,4 +218,28 @@ private:
     std::unique_ptr<Expression> m_callee;
     Token m_parenthesis;
     std::vector<std::unique_ptr<Expression>> m_arguments;
+};
+
+class Get : public Expression {
+public:
+    Get (
+        std::unique_ptr<Expression> object,
+        Token name
+    )
+        : m_object{ std::move(object) }
+        , m_name{ name }
+    { }
+
+    virtual ~Get() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitGet(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+    friend class Resolver;
+private:
+    std::unique_ptr<Expression> m_object;
+    Token m_name;
 };
