@@ -55,6 +55,11 @@ std::any Resolver::visitCall(Call& call) {
     return {};
 }
 
+std::any Resolver::visitGet(Get& get) {
+    resolve(get.m_object.get());
+    return {};
+}
+
 std::any Resolver::visitExpressionStmt(ExpressionStmt& stmt) {
     resolve(stmt.m_expression.get());
     return {};
