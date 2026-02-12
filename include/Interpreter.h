@@ -11,9 +11,12 @@
 #include "Environment.h"
 #include "Callable.h"
 
+class LoxInstance;
+
 class Interpreter : public Expression::Visitor, public Statement::Visitor {
 public:
     class RuntimeError : public std::runtime_error {
+    friend class LoxInstance;
     public:
         RuntimeError(Token token, const std::string& error)
             : std::runtime_error{ error }, m_token{ token } { };
