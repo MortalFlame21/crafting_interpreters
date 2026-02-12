@@ -346,3 +346,13 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
     m_environment->assign(stmt.m_name, class_);
     return {};
 }
+
+std::any Interpreter::visitGet(Get& get) {
+    auto object { evaluate(get.m_object.get()) };
+    if (object.type() == typeid(std::shared_ptr<LoxInstance>())) {
+        return std::any_cast<std::shared_ptr<LoxInstance>>(object).get();
+    }
+    // remove after debugging this is ok.
+    std::cout << object.type().name() << "\n";
+    throw RuntimeError(get.m_name, "Only instances have properties");
+}

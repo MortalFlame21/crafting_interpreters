@@ -37,6 +37,7 @@ public:
 	std::any visitAssignment(Assignment& assignment) override;
 	std::any visitLogical(Logical& logical) override;
 	std::any visitCall(Call& call) override;
+	std::any visitGet(Get& get) override;
     // statements
     std::any visitExpressionStmt(ExpressionStmt& stmt) override;
     std::any visitPrintStmt(PrintStmt& stmt) override;
