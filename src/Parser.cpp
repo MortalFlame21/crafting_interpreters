@@ -438,8 +438,15 @@ std::unique_ptr<Expression> Parser::unary() {
 std::unique_ptr<Expression> Parser::call() {
     auto expr { primary() };
 
-    while (match({ Token::Type::LEFT_PAREN })) {
-        expr = finishCall(std::move(expr));
+    while (match({ Token::Type::LEFT_PAREN }) || match({ Token::Type::DOT })) {
+        if (match({ Token::Type::LEFT_PAREN })) {
+            expr = finishCall(std::move(expr));
+        }
+        else if (match({ Token::Type::DOT })) {
+            auto name { consume(Token::Type::IDENTIFIER,
+                "Expect property name after '.'") };
+            expr = std::make_unique<Get>(expr, name);
+        }
     }
 
     return expr;
