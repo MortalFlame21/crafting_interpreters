@@ -15,6 +15,7 @@ class Assignment;
 class Logical;
 class Call;
 class Get;
+class Set;
 
 class Expression {
 public:
@@ -35,6 +36,7 @@ public:
         virtual std::any visitLogical(Logical& logical) = 0;
         virtual std::any visitCall(Call& call) = 0;
         virtual std::any visitGet(Get& get) = 0;
+        virtual std::any visitSet(Set& set) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -236,10 +238,37 @@ public:
         return visitor.visitGet(*this);
     }
 
+    friend class Parser;
+    friend class Interpreter;
+    friend class Resolver;
+private:
+    std::unique_ptr<Expression> m_object;
+    Token m_name;
+};
+
+class Set : public Expression {
+public:
+    Set (
+        std::unique_ptr<Expression> object,
+        Token name,
+        std::unique_ptr<Expression> value
+    )
+        : m_object{ std::move(object) }
+        , m_name{ name }
+        , m_value{ std::move(value) }
+    { }
+
+    virtual ~Set() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitSet(*this);
+    }
+
     friend class AstPrinter;
     friend class Interpreter;
     friend class Resolver;
 private:
     std::unique_ptr<Expression> m_object;
     Token m_name;
+    std::unique_ptr<Expression> m_value;
 };
