@@ -356,3 +356,14 @@ std::any Interpreter::visitGet(Get& get) {
     std::cout << object.type().name() << "\n";
     throw RuntimeError(get.m_name, "Only instances have properties");
 }
+
+std::any Interpreter::visitSet(Set& set) {
+    auto obj { evaluate(set.m_object.get()) };
+
+    if (obj.type() != typeid(std::shared_ptr<LoxInstance>()))
+        throw RuntimeError(set.m_name, "Only instances have fields");
+
+    auto value { evaluate(set.m_value.get()) };
+    std::any_cast<std::shared_ptr<LoxInstance>>(obj)->set(set.m_name, value);
+    return value;
+}
