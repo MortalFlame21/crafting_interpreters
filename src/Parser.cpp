@@ -307,8 +307,11 @@ std::unique_ptr<Expression> Parser::assignment() {
 
         // so wack but idk
         if (auto* varExpr { dynamic_cast<Variable*>(expr.get()) }) {
-            auto name { varExpr->m_name };
-            return std::make_unique<Assignment>(name, std::move(value));
+            return std::make_unique<Assignment>(varExpr->m_name, std::move(value));
+        }
+        else if (auto* getExpr { dynamic_cast<Get*>(expr.get()) }) {
+            // not 100% if std::move will cause an error
+            return std::make_unique<Set>(std::move(getExpr->m_object), getExpr->m_name, std::move(value));
         }
 
         error(equals, "Invalid assignment target");

@@ -27,7 +27,7 @@ block_stmt        -> "{" <declaration> "}";
 expression_stmt   -> <expression> ";";
 print_stmt        -> "print" <expression> ";";
 expression        -> <assignment>;
-assignment        -> <IDENTIFIER> "=" <assignment>
+assignment        -> <call> "." | <IDENTIFIER> "=" <assignment>
                         | <logical_or>
 logical_or        -> <logical_and> "or" <logical_and>;
 logical_and       -> <equality> "and" <equality>;
