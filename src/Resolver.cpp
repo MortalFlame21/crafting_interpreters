@@ -60,6 +60,12 @@ std::any Resolver::visitGet(Get& get) {
     return {};
 }
 
+std::any Resolver::visitSet(Set& set) {
+    resolve(set.m_value.get());
+    resolve(set.m_object.get());
+    return {};
+}
+
 std::any Resolver::visitExpressionStmt(ExpressionStmt& stmt) {
     resolve(stmt.m_expression.get());
     return {};
