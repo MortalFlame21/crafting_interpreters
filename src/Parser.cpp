@@ -310,7 +310,6 @@ std::unique_ptr<Expression> Parser::assignment() {
             return std::make_unique<Assignment>(varExpr->m_name, std::move(value));
         }
         else if (auto* getExpr { dynamic_cast<Get*>(expr.get()) }) {
-            // not 100% if std::move will cause an error
             return std::make_unique<Set>(std::move(getExpr->m_object), getExpr->m_name, std::move(value));
         }
 
