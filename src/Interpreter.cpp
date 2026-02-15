@@ -349,7 +349,7 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
 
 std::any Interpreter::visitGet(Get& get) {
     auto object { evaluate(get.m_object.get()) };
-    if (object.type() == typeid(std::shared_ptr<LoxInstance>())) {
+    if (object.type() == typeid(std::shared_ptr<LoxInstance>)) {
         return std::any_cast<std::shared_ptr<LoxInstance>>(object).get();
     }
     // remove after debugging this is ok.
@@ -360,7 +360,7 @@ std::any Interpreter::visitGet(Get& get) {
 std::any Interpreter::visitSet(Set& set) {
     auto obj { evaluate(set.m_object.get()) };
 
-    if (obj.type() != typeid(std::shared_ptr<LoxInstance>()))
+    if (obj.type() != typeid(std::shared_ptr<LoxInstance>))
         throw RuntimeError(set.m_name, "Only instances have fields");
 
     auto value { evaluate(set.m_value.get()) };
