@@ -39,6 +39,7 @@ public:
 private:
     enum class FunctionType {
         FUNCTION,
+        METHOD,
         NONE,
         MAX_FUNCTION_TYPE = NONE,
     };
@@ -50,7 +51,7 @@ private:
     void define(Token token);
     void declare(Token token);
     void resolveLocal(Expression* expr, Token name);
-    void resolveFunction(FunctionStmt& function, FunctionType type);
+    void resolveFunction(FunctionStmt* function, FunctionType type);
 
     std::shared_ptr<Interpreter> m_interpreter;
     // vector with stack like behaviour. front is bottom, back is top of stack.

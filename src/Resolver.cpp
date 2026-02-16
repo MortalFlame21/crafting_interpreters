@@ -106,7 +106,7 @@ std::any Resolver::visitWhileStmt(WhileStmt& stmt) {
 std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
-    resolveFunction(stmt, FunctionType::FUNCTION);
+    resolveFunction(&stmt, FunctionType::FUNCTION);
     return {};
 }
 
@@ -171,16 +171,16 @@ void Resolver::resolveLocal(Expression* expr, Token name) {
     // if not found it is a global
 };
 
-void Resolver::resolveFunction(FunctionStmt& function, FunctionType type) {
+void Resolver::resolveFunction(FunctionStmt* function, FunctionType type) {
     auto enclosingFunction { m_currentFunction };
     m_currentFunction = type;
 
     beginScope();
-    for (auto& p : function.m_params) {
+    for (auto& p : function->m_params) {
         declare(p);
         define(p);
     }
-    resolve(function.m_body);
+    resolve(function->m_body);
     endScope();
 
     m_currentFunction = enclosingFunction;
@@ -189,5 +189,10 @@ void Resolver::resolveFunction(FunctionStmt& function, FunctionType type) {
 std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
+
+    for (auto& m : stmt.m_methods) {
+        resolveFunction(m, FunctionType::METHOD);
+    }
+
     return {};
 }
