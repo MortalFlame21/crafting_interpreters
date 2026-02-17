@@ -349,7 +349,7 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
         methods.insert_or_assign(m->m_name.m_lexeme, func);
     }
 
-    auto class_ { std::make_shared<LoxClass>(stmt.m_name.m_lexeme) };
+    auto class_ { std::make_shared<LoxClass>(stmt.m_name.m_lexeme, methods) };
     m_environment->assign(stmt.m_name, class_);
     return {};
 }

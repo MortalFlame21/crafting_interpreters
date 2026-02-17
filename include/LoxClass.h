@@ -12,8 +12,11 @@ class LoxInstance;
 
 class LoxClass : public Callable {
 public:
-    LoxClass(std::string name)
-        : m_name { name } { }
+    LoxClass(std::string name,
+        std::unordered_map<std::string, std::shared_ptr<FunctionCallable>>& methods)
+        : m_name { name }
+        , m_methods { methods }
+    { }
 
     std::ostream& operator<<(std::ostream& out) {
         return out << "class<" << m_name << ">";
@@ -29,6 +32,7 @@ public:
     friend class LoxInstance;
 private:
     std::string m_name;
+    std::unordered_map<std::string, std::shared_ptr<FunctionCallable>> m_methods;
 };
 
 class LoxInstance {
