@@ -39,12 +39,15 @@ public:
 class FunctionCallable : public Callable {
 public:
     FunctionCallable(
-        std::unique_ptr<FunctionStmt> declaration,
+        FunctionStmt* declaration,
         std::shared_ptr<Environment> closure
     )
-        : m_declaration { std::move(declaration) }
+        : m_declaration { declaration }
         , m_closure { closure }
     { }
+
+    FunctionCallable(const FunctionCallable&) = delete;
+    FunctionCallable& operator=(const FunctionCallable&) = delete;
 
     std::any call(
         [[maybe_unused]] Interpreter& interpreter,
@@ -53,7 +56,7 @@ public:
     std::size_t arity() override;
     virtual std::string str() override;
 private:
-    std::unique_ptr<FunctionStmt> m_declaration;
+    FunctionStmt* m_declaration;
     std::shared_ptr<Environment> m_closure;
 };
 
