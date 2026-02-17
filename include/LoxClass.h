@@ -29,6 +29,8 @@ public:
     std::size_t arity() override;
     std::string str() override;
 
+    std::shared_ptr<FunctionCallable> findMethod(std::string name);
+
     friend class LoxInstance;
 private:
     std::string m_name;
@@ -54,15 +56,8 @@ public:
         return "classInstance<" + m_class->m_name + ">";
     }
 
-    std::any get(Token name) {
-        if (m_fields.find(name.m_lexeme) != m_fields.end())
-            return m_fields.find(name.m_lexeme)->second;
-        throw Interpreter::RuntimeError(name, "Undefined property " + name.m_lexeme);
-    }
-
-    void set(Token name, std::any& value) {
-        m_fields.insert_or_assign(name.m_lexeme, value);
-    }
+    std::any get(Token name);
+    void set(Token name, std::any& value);
 private:
     LoxClass* m_class {};
     std::unordered_map<std::string, std::any> m_fields {};
