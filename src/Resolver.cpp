@@ -191,7 +191,7 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     define(stmt.m_name);
 
     for (auto& m : stmt.m_methods) {
-        resolveFunction(m, FunctionType::METHOD);
+        resolveFunction(m.get(), FunctionType::METHOD);
     }
 
     return {};
