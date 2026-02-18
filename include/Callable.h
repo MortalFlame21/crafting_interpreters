@@ -55,6 +55,8 @@ public:
     ) override;
     std::size_t arity() override;
     virtual std::string str() override;
+
+    std::shared_ptr<FunctionCallable> bind(LoxInstance* instance);
 private:
     std::unique_ptr<FunctionStmt> m_declaration;
     std::shared_ptr<Environment> m_closure;

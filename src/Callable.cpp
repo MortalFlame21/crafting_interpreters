@@ -50,4 +50,10 @@ std::string FunctionCallable::str() {
     return "<function " + m_declaration->m_name.m_lexeme + ">";
 };
 
+std::shared_ptr<FunctionCallable> FunctionCallable::bind(LoxInstance* instance) {
+    auto env { std::shared_ptr<Environment>(m_closure) };
+    env->define("this", instance);
+    return std::make_shared<FunctionCallable>(m_declaration, env);
+}
+
 // End Function
