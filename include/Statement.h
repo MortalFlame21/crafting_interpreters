@@ -174,8 +174,20 @@ public:
     virtual ~FunctionStmt() { };
 
     // explicitly define the move ctor and move assignment ctor.
-    FunctionStmt(FunctionStmt&&) = default;
-    FunctionStmt& operator=(FunctionStmt&&) = default;
+    FunctionStmt(FunctionStmt&& o)
+        : m_name{ std::move(o.m_name) }
+        , m_params{ std::move(o.m_params) }
+        , m_body{ std::move(o.m_body) }
+    { }
+
+    FunctionStmt& operator=(FunctionStmt&& o) noexcept {
+        if (&o == this)
+            return *this;
+
+        m_name = std::move(o.m_name);
+        m_params = std::move(o.m_params);
+        m_body = std::move(o.m_body);
+    };
 
     // disallow copy ctor and copy assignment ctor.
     FunctionStmt(const FunctionStmt&) = delete;
@@ -223,10 +235,10 @@ class ClassStmt : public Statement {
 public:
     ClassStmt (
         Token name,
-        std::vector<FunctionStmt*> methods
+        std::vector<std::unique_ptr<FunctionStmt>> methods
     )
         : m_name{ name }
-        , m_methods{ methods }
+        , m_methods{ std::move(methods) }
     { }
 
     virtual ~ClassStmt() { };
@@ -240,5 +252,5 @@ public:
     friend class Resolver;
 private:
     Token m_name;
-    std::vector<FunctionStmt*> m_methods;
+    std::vector<std::unique_ptr<FunctionStmt>> m_methods {};
 };
