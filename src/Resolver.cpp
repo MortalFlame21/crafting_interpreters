@@ -66,6 +66,10 @@ std::any Resolver::visitSet(Set& set) {
     return {};
 }
 
+std::any Resolver::visitThisExpr(ThisExpr& this_) {
+    resolveLocal(&this_, this_.m_keyword);
+    return {};
+}
 std::any Resolver::visitExpressionStmt(ExpressionStmt& stmt) {
     resolve(stmt.m_expression.get());
     return {};
