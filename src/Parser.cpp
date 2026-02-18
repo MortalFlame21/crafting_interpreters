@@ -129,19 +129,18 @@ std::unique_ptr<Statement> Parser::classDeclaration() {
     auto name { consume(Token::Type::IDENTIFIER, "Expect class name") };
 
     consume(Token::Type::LEFT_BRACE, "Expect '{' before class body");
-    std::vector<FunctionStmt*> methods {};
+    std::vector<std::unique_ptr<FunctionStmt>> methods {};
     while (!check(Token::Type::RIGHT_BRACE) && !isAtEnd()) {
         // super wack
-        if (auto* d { dynamic_cast<FunctionStmt*>(function("method").get()) }) {
-            methods.push_back(d);
-        }
-        else {
-            Errors::errors(name, "fail to parse method");
-        }
+        auto func { function("method") };
+        if (auto raw { dynamic_cast<FunctionStmt*>(func.release()) })
+            methods.push_back(std::unique_ptr<FunctionStmt>(raw));
+        else
+            Errors::errors(name, "Fail to parse method");
     }
     consume(Token::Type::RIGHT_BRACE, "Expect '}' after class body");
 
-    return std::make_unique<ClassStmt>(name, methods);
+    return std::make_unique<ClassStmt>(name, std::move(methods));
 }
 
 std::unique_ptr<Statement> Parser::function(const std::string& kind) {
