@@ -194,9 +194,14 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
 
+    beginScope();
+    m_scopes.back().insert_or_assign("this", true);
+
     for (auto& m : stmt.m_methods) {
         resolveFunction(m.get(), FunctionType::METHOD);
     }
+
+    endScope();
 
     return {};
 }
