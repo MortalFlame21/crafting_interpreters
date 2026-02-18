@@ -39,10 +39,10 @@ public:
 class FunctionCallable : public Callable {
 public:
     FunctionCallable(
-        FunctionStmt* declaration,
+        std::unique_ptr<FunctionStmt> declaration,
         std::shared_ptr<Environment> closure
     )
-        : m_declaration { declaration }
+        : m_declaration { std::move(declaration) }
         , m_closure { closure }
     { }
 
@@ -56,7 +56,7 @@ public:
     std::size_t arity() override;
     virtual std::string str() override;
 private:
-    FunctionStmt* m_declaration;
+    std::unique_ptr<FunctionStmt> m_declaration;
     std::shared_ptr<Environment> m_closure;
 };
 
