@@ -179,15 +179,7 @@ public:
         , m_params{ std::move(o.m_params) }
         , m_body{ std::move(o.m_body) }
     { }
-
-    FunctionStmt& operator=(FunctionStmt&& o) noexcept {
-        if (&o == this)
-            return *this;
-
-        m_name = std::move(o.m_name);
-        m_params = std::move(o.m_params);
-        m_body = std::move(o.m_body);
-    };
+    FunctionStmt& operator=(FunctionStmt&&) = default;
 
     // disallow copy ctor and copy assignment ctor.
     FunctionStmt(const FunctionStmt&) = delete;
