@@ -27,7 +27,7 @@ std::any LoxInstance::get(Token name) {
         return m_fields.find(name.m_lexeme)->second;
 
     if (auto method { m_class->findMethod(name.m_lexeme) }; method)
-        return method;
+        return method->bind(this);
 
     throw Interpreter::RuntimeError(name, "Undefined property " + name.m_lexeme);
 }
