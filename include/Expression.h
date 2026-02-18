@@ -38,7 +38,6 @@ public:
         virtual std::any visitCall(Call& call) = 0;
         virtual std::any visitGet(Get& get) = 0;
         virtual std::any visitSet(Set& set) = 0;
-        virtual std::any visitSet(Set& set) = 0;
         virtual std::any visitThisExpr(ThisExpr& this_) = 0;
     };
 
