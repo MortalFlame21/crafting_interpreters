@@ -328,7 +328,7 @@ std::any Interpreter::visitCall(Call& call) {
 std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
     auto name { stmt.m_name.m_lexeme };
     std::shared_ptr<Callable> func { std::make_shared<FunctionCallable> (
-        &stmt,
+        std::make_unique<FunctionStmt>(std::move(stmt)),
         m_environment
     )};
     m_environment->define(name, func);
@@ -345,8 +345,9 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
 
     std::unordered_map<std::string, std::shared_ptr<FunctionCallable>> methods {};
     for (auto& m : stmt.m_methods) {
-        auto func { std::make_shared<FunctionCallable>(m, m_environment) };
-        methods.insert_or_assign(m->m_name.m_lexeme, func);
+        auto name { m->m_name.m_lexeme };
+        auto func { std::make_shared<FunctionCallable>(std::move(m), m_environment) };
+        methods.insert_or_assign(name, func);
     }
 
     auto class_ { std::make_shared<LoxClass>(stmt.m_name.m_lexeme, methods) };
