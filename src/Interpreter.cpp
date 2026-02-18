@@ -307,7 +307,9 @@ std::any Interpreter::visitCall(Call& call) {
     // this can either be a FunctionCallable (function) or LoxClass (class) std::shared_ptr
     // throw if otherwise
     std::shared_ptr<Callable> callable { };
-    if (callee.type() == typeid(std::shared_ptr<FunctionCallable>))
+    if (callee.type() == typeid(std::shared_ptr<Callable>))
+        callable = std::any_cast<std::shared_ptr<Callable>>(callee);
+    else if (callee.type() == typeid(std::shared_ptr<FunctionCallable>))
         callable = std::any_cast<std::shared_ptr<FunctionCallable>>(callee);
     else if (callee.type() == typeid(std::shared_ptr<LoxClass>))
         callable = std::any_cast<std::shared_ptr<LoxClass>>(callee);
