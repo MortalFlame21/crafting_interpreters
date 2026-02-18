@@ -16,6 +16,7 @@ class Logical;
 class Call;
 class Get;
 class Set;
+class ThisExpr;
 
 class Expression {
 public:
@@ -37,6 +38,8 @@ public:
         virtual std::any visitCall(Call& call) = 0;
         virtual std::any visitGet(Get& get) = 0;
         virtual std::any visitSet(Set& set) = 0;
+        virtual std::any visitSet(Set& set) = 0;
+        virtual std::any visitThisExpr(ThisExpr& this_) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -271,4 +274,21 @@ private:
     std::unique_ptr<Expression> m_object;
     Token m_name;
     std::unique_ptr<Expression> m_value;
+};
+
+class ThisExpr : public Expression {
+public:
+    ThisExpr (Token keyword) : m_keyword{ keyword } { }
+
+    virtual ~ThisExpr() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitThisExpr(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+    friend class Resolver;
+private:
+    Token m_keyword;
 };
