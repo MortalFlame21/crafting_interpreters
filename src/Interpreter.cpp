@@ -187,9 +187,8 @@ std::string Interpreter::str(std::any object) {
     else {
         throw std::runtime_error("Unable to print object type");
     }
-
-
 }
+
 std::any Interpreter::visitExpressionStmt(ExpressionStmt& stmt) {
     evaluate(stmt.m_expression.get());
     return {};
@@ -373,4 +372,8 @@ std::any Interpreter::visitSet(Set& set) {
     auto value { evaluate(set.m_value.get()) };
     std::any_cast<std::shared_ptr<LoxInstance>>(obj)->set(set.m_name, value);
     return value;
+}
+
+std::any Interpreter::visitThisExpr(ThisExpr& this_) {
+    return lookUpVariable(this_.m_keyword, &this_);
 }

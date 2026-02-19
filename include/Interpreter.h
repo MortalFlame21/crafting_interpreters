@@ -42,6 +42,7 @@ public:
 	std::any visitCall(Call& call) override;
 	std::any visitGet(Get& get) override;
 	std::any visitSet(Set& set) override;
+	std::any visitThisExpr(ThisExpr& this_) override;
     // statements
     std::any visitExpressionStmt(ExpressionStmt& stmt) override;
     std::any visitPrintStmt(PrintStmt& stmt) override;
