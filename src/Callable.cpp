@@ -53,7 +53,7 @@ std::string FunctionCallable::str() {
 std::shared_ptr<FunctionCallable> FunctionCallable::bind(LoxInstance* instance) {
     auto env { std::shared_ptr<Environment>(m_closure) };
     env->define("this", instance);
-    return std::make_shared<FunctionCallable>(m_declaration, env);
+    return std::make_shared<FunctionCallable>(std::move(m_declaration), env);
 }
 
 // End Function

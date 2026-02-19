@@ -10,6 +10,7 @@
 
 class Interpreter;
 class Environment;
+class LoxInstance;
 
 class Callable {
 public:
