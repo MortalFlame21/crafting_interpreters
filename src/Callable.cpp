@@ -2,6 +2,7 @@
 
 #include "Callable.h"
 #include "Interpreter.h"
+#include "LoxClass.h"
 
 // Begin ClockCallable
 
@@ -52,7 +53,8 @@ std::string FunctionCallable::str() {
 
 std::shared_ptr<FunctionCallable> FunctionCallable::bind(LoxInstance* instance) {
     auto env { std::shared_ptr<Environment>(m_closure) };
-    env->define("this", instance);
+    // apparently use std::enable_shared_from_this ??
+    env->define("this", std::shared_ptr<LoxInstance>(instance));
     return std::make_shared<FunctionCallable>(std::move(m_declaration), env);
 }
 

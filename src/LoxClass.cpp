@@ -26,6 +26,8 @@ std::any LoxInstance::get(Token name) {
     if (m_fields.find(name.m_lexeme) != m_fields.end())
         return m_fields.find(name.m_lexeme)->second;
 
+    // apparently make LoxInstance use std::enable_shared_from_this ??
+    // https://stackoverflow.com/questions/11711034/stdshared-ptr-of-this
     if (auto method { m_class->findMethod(name.m_lexeme) }; method)
         return method->bind(this);
 
