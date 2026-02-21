@@ -45,6 +45,12 @@ private:
         MAX_FUNCTION_TYPE = NONE,
     };
 
+    enum class ClassType {
+        CLASS,
+        NONE,
+        MAX_CLASS_TYPE = NONE,
+    };
+
     void resolve(Statement* statement);
     void resolve(Expression* expression);
     void beginScope();
@@ -58,4 +64,5 @@ private:
     // vector with stack like behaviour. front is bottom, back is top of stack.
     std::vector<std::unordered_map<std::string, bool>> m_scopes {};
     FunctionType m_currentFunction { FunctionType::NONE };
+    ClassType m_currentClass { ClassType::NONE };
 };

@@ -67,9 +67,13 @@ std::any Resolver::visitSet(Set& set) {
 }
 
 std::any Resolver::visitThisExpr(ThisExpr& this_) {
-    resolveLocal(&this_, this_.m_keyword);
+    if (m_currentClass == ClassType::NONE)
+        Errors::errors(this_.m_keyword, "Can't use 'this' outside of class.");
+    else
+        resolveLocal(&this_, this_.m_keyword);
     return {};
 }
+
 std::any Resolver::visitExpressionStmt(ExpressionStmt& stmt) {
     resolve(stmt.m_expression.get());
     return {};
@@ -191,6 +195,9 @@ void Resolver::resolveFunction(FunctionStmt* function, FunctionType type) {
 }
 
 std::any Resolver::visitClassStmt(ClassStmt& stmt) {
+    auto enclosingClass { m_currentClass };
+    m_currentClass = ClassType::CLASS;
+
     declare(stmt.m_name);
     define(stmt.m_name);
 
@@ -202,6 +209,6 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     }
 
     endScope();
-
+    m_currentClass = enclosingClass;
     return {};
 }
