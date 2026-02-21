@@ -5,12 +5,17 @@ std::any LoxClass::call (
     [[maybe_unused]] Interpreter& interpreter,
     [[maybe_unused]] std::vector<std::any> args
 ) {
-    auto instance = std::make_shared<LoxInstance>(this);
+    auto instance { std::make_shared<LoxInstance>(this) };
+    if (auto init { findMethod("init") }; init)
+        init->bind(instance.get())->call(interpreter, args);
     return instance;
 }
 
 std::size_t LoxClass::arity() {
-    return 0;
+    if (auto init { findMethod("init") }; init)
+        return init->arity();
+    else
+        return 0;
 }
 
 std::string LoxClass::str() {
