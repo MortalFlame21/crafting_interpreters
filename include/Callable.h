@@ -41,10 +41,12 @@ class FunctionCallable : public Callable {
 public:
     FunctionCallable(
         std::unique_ptr<FunctionStmt> declaration,
-        std::shared_ptr<Environment> closure
+        std::shared_ptr<Environment> closure,
+        bool initialiser
     )
         : m_declaration { std::move(declaration) }
         , m_closure { closure }
+        , m_isInitialiser { initialiser }
     { }
 
     FunctionCallable(const FunctionCallable&) = delete;
@@ -61,6 +63,7 @@ public:
 private:
     std::unique_ptr<FunctionStmt> m_declaration;
     std::shared_ptr<Environment> m_closure;
+    bool m_isInitialiser;
 };
 
 // class used to be able to easily unwind the stack to return value

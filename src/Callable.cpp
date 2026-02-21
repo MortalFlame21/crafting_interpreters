@@ -22,7 +22,7 @@ std::size_t ClockCallable::arity() {
 }
 // End ClockCallable
 
-// Start Function
+// Start FunctionCallable
 
 std::any FunctionCallable::call(
     [[maybe_unused]] Interpreter& interpreter,
@@ -40,6 +40,7 @@ std::any FunctionCallable::call(
     catch (const ReturnStmtStackError& returnValue){
         return returnValue.m_value;
     }
+    if (m_isInitialiser) return m_closure->getAt(0, "this");
     return {};
 }
 
@@ -55,7 +56,9 @@ std::shared_ptr<FunctionCallable> FunctionCallable::bind(LoxInstance* instance) 
     auto env { std::shared_ptr<Environment>(m_closure) };
     // apparently use std::enable_shared_from_this ??
     env->define("this", std::shared_ptr<LoxInstance>(instance));
-    return std::make_shared<FunctionCallable>(std::move(m_declaration), env);
+    return std::make_shared<FunctionCallable>(
+        std::move(m_declaration), env, m_isInitialiser
+    );
 }
 
-// End Function
+// End FunctionCallable
