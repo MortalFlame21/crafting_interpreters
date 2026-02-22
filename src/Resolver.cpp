@@ -121,7 +121,9 @@ std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
     if (m_currentFunction == FunctionType::NONE)
         Errors::errors(stmt.m_keyword, "Can't return from top-level code.");
-    if (stmt.m_value)
+    else if (m_currentFunction == FunctionType::INITIALISER)
+        Errors::errors(stmt.m_keyword, "Can't return from initialiser.");
+    else if (stmt.m_value)
         resolve(stmt.m_value.get());
     return {};
 }
@@ -205,7 +207,9 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     m_scopes.back().insert_or_assign("this", true);
 
     for (auto& m : stmt.m_methods) {
-        resolveFunction(m.get(), FunctionType::METHOD);
+        auto decl { (m->m_name.m_lexeme == "init")
+            ? FunctionType::INITIALISER : FunctionType::METHOD };
+        resolveFunction(m.get(), decl);
     }
 
     endScope();

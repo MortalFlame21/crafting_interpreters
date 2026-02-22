@@ -41,6 +41,7 @@ private:
     enum class FunctionType {
         FUNCTION,
         METHOD,
+        INITIALISER,
         NONE,
         MAX_FUNCTION_TYPE = NONE,
     };
