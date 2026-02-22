@@ -7,6 +7,7 @@
 #include "Lox.h"
 #include "Environment.h"
 #include "Callable.h"
+#include "LoxClass.h"
 
 std::any Interpreter::visitBinary(Binary& binary) {
     std::any left { evaluate(binary.m_left.get()) };
@@ -147,6 +148,9 @@ void Interpreter::interpret(const std::vector<std::unique_ptr<Statement>>& state
     catch (RuntimeError& e) {
         Lox::runtimeError(e);
     }
+    catch (std::runtime_error& e) {
+        std::cout << e.what() << "\n";
+    }
     catch (...) {
         std::cout << "Unexpected error occurred.\n";
     }
@@ -171,10 +175,20 @@ std::string Interpreter::str(std::any object) {
     else if (object.type() == typeid(std::shared_ptr<Callable>)) {
         return std::any_cast<std::shared_ptr<Callable>>(object)->str();
     }
-
-    // most likely a string??
-    return std::any_cast<std::string>(object);
+    else if (object.type() == typeid(std::shared_ptr<LoxInstance>)) {
+        return std::any_cast<std::shared_ptr<LoxInstance>>(object)->str();
+    }
+    else if (object.type() == typeid(std::shared_ptr<LoxClass>)) {
+        return std::any_cast<std::shared_ptr<LoxClass>>(object)->str();
+    }
+    else if (object.type() == typeid(std::string)) {
+        return std::any_cast<std::string>(object);
+    }
+    else {
+        throw std::runtime_error("Unable to print object type");
+    }
 }
+
 std::any Interpreter::visitExpressionStmt(ExpressionStmt& stmt) {
     evaluate(stmt.m_expression.get());
     return {};
@@ -289,30 +303,35 @@ std::any Interpreter::visitCall(Call& call) {
         args.push_back(evaluate(arg.get()));
     }
 
-    if (callee.type() != typeid(std::shared_ptr<Callable>)) {
-        throw RuntimeError (
-            call.m_parenthesis, "Can only call functions and classes"
-        );
-    }
+    // this can either be a FunctionCallable (function) or LoxClass (class) std::shared_ptr
+    // throw if otherwise
+    std::shared_ptr<Callable> callable { };
+    if (callee.type() == typeid(std::shared_ptr<Callable>))
+        callable = std::any_cast<std::shared_ptr<Callable>>(callee);
+    else if (callee.type() == typeid(std::shared_ptr<FunctionCallable>))
+        callable = std::any_cast<std::shared_ptr<FunctionCallable>>(callee);
+    else if (callee.type() == typeid(std::shared_ptr<LoxClass>))
+        callable = std::any_cast<std::shared_ptr<LoxClass>>(callee);
+    else
+        throw RuntimeError(call.m_parenthesis, "Can only call functions and classes");
 
-    auto function { std::any_cast<std::shared_ptr<Callable>>(callee) };
-
-    if (args.size() != function->arity()) {
+    if (args.size() != callable->arity()) {
         throw RuntimeError (
             call.m_parenthesis,
-            "Expected " + std::to_string(function->arity()) +
+            "Expected " + std::to_string(callable->arity()) +
             " arguments but got " + std::to_string(args.size()) + " arguments"
         );
     }
 
-    return function->call(*this, args);
+    return callable->call(*this, args);
 }
 
 std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
     auto name { stmt.m_name.m_lexeme };
     std::shared_ptr<Callable> func { std::make_shared<FunctionCallable> (
         std::make_unique<FunctionStmt>(std::move(stmt)),
-        m_environment
+        m_environment,
+        false
     )};
     m_environment->define(name, func);
     return {};
@@ -321,4 +340,43 @@ std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
 std::any Interpreter::visitReturnStmt(ReturnStmt& stmt) {
     auto value { (stmt.m_value) ? evaluate(stmt.m_value.get()) : std::any() };
     throw ReturnStmtStackError(value);
+}
+
+std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
+    m_environment->define(stmt.m_name.m_lexeme, {});
+
+    std::unordered_map<std::string, std::shared_ptr<FunctionCallable>> methods {};
+    for (auto& m : stmt.m_methods) {
+        auto name { m->m_name.m_lexeme };
+        auto func { std::make_shared<FunctionCallable>(
+            std::move(m), m_environment, (m->m_name.m_lexeme == "init")
+        ) };
+        methods.insert_or_assign(name, func);
+    }
+
+    auto class_ { std::make_shared<LoxClass>(stmt.m_name.m_lexeme, methods) };
+    m_environment->assign(stmt.m_name, class_);
+    return {};
+}
+
+std::any Interpreter::visitGet(Get& get) {
+    auto object { evaluate(get.m_object.get()) };
+    if (object.type() == typeid(std::shared_ptr<LoxInstance>))
+        return std::any_cast<std::shared_ptr<LoxInstance>>(object)->get(get.m_name);
+    throw RuntimeError(get.m_name, "Only instances have properties");
+}
+
+std::any Interpreter::visitSet(Set& set) {
+    auto obj { evaluate(set.m_object.get()) };
+
+    if (obj.type() != typeid(std::shared_ptr<LoxInstance>))
+        throw RuntimeError(set.m_name, "Only instances have fields");
+
+    auto value { evaluate(set.m_value.get()) };
+    std::any_cast<std::shared_ptr<LoxInstance>>(obj)->set(set.m_name, value);
+    return value;
+}
+
+std::any Interpreter::visitThisExpr(ThisExpr& this_) {
+    return lookUpVariable(this_.m_keyword, &this_);
 }

@@ -63,6 +63,7 @@ public:
         UNKNOWN_TOKEN_TYPE = MAX_TOKEN_TYPE,
     };
 
+    Token() { }
     Token(Type type, std::string_view lexeme, std::any literal,
         std::size_t line);
 

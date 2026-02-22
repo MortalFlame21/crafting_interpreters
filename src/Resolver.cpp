@@ -55,6 +55,25 @@ std::any Resolver::visitCall(Call& call) {
     return {};
 }
 
+std::any Resolver::visitGet(Get& get) {
+    resolve(get.m_object.get());
+    return {};
+}
+
+std::any Resolver::visitSet(Set& set) {
+    resolve(set.m_value.get());
+    resolve(set.m_object.get());
+    return {};
+}
+
+std::any Resolver::visitThisExpr(ThisExpr& this_) {
+    if (m_currentClass == ClassType::NONE)
+        Errors::errors(this_.m_keyword, "Can't use 'this' outside of class.");
+    else
+        resolveLocal(&this_, this_.m_keyword);
+    return {};
+}
+
 std::any Resolver::visitExpressionStmt(ExpressionStmt& stmt) {
     resolve(stmt.m_expression.get());
     return {};
@@ -95,14 +114,16 @@ std::any Resolver::visitWhileStmt(WhileStmt& stmt) {
 std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
-    resolveFunction(stmt, FunctionType::FUNCTION);
+    resolveFunction(&stmt, FunctionType::FUNCTION);
     return {};
 }
 
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
     if (m_currentFunction == FunctionType::NONE)
         Errors::errors(stmt.m_keyword, "Can't return from top-level code.");
-    if (stmt.m_value)
+    else if (m_currentFunction == FunctionType::INITIALISER)
+        Errors::errors(stmt.m_keyword, "Can't return from initialiser.");
+    else if (stmt.m_value)
         resolve(stmt.m_value.get());
     return {};
 }
@@ -160,17 +181,38 @@ void Resolver::resolveLocal(Expression* expr, Token name) {
     // if not found it is a global
 };
 
-void Resolver::resolveFunction(FunctionStmt& function, FunctionType type) {
+void Resolver::resolveFunction(FunctionStmt* function, FunctionType type) {
     auto enclosingFunction { m_currentFunction };
     m_currentFunction = type;
 
     beginScope();
-    for (auto& p : function.m_params) {
+    for (auto& p : function->m_params) {
         declare(p);
         define(p);
     }
-    resolve(function.m_body);
+    resolve(function->m_body);
     endScope();
 
     m_currentFunction = enclosingFunction;
+}
+
+std::any Resolver::visitClassStmt(ClassStmt& stmt) {
+    auto enclosingClass { m_currentClass };
+    m_currentClass = ClassType::CLASS;
+
+    declare(stmt.m_name);
+    define(stmt.m_name);
+
+    beginScope();
+    m_scopes.back().insert_or_assign("this", true);
+
+    for (auto& m : stmt.m_methods) {
+        auto decl { (m->m_name.m_lexeme == "init")
+            ? FunctionType::INITIALISER : FunctionType::METHOD };
+        resolveFunction(m.get(), decl);
+    }
+
+    endScope();
+    m_currentClass = enclosingClass;
+    return {};
 }

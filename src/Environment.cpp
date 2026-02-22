@@ -31,7 +31,7 @@ Environment* Environment::ancestor(int distance) {
     return env;
 }
 
-void Environment::assign(Token name, std::any& value) {
+void Environment::assign(Token name, const std::any& value) {
     if (m_values.find(name.m_lexeme) != m_values.end()) {
         m_values.at(name.m_lexeme) = value;
         return;

@@ -2,6 +2,7 @@
 
 #include "Callable.h"
 #include "Interpreter.h"
+#include "LoxClass.h"
 
 // Begin ClockCallable
 
@@ -21,7 +22,7 @@ std::size_t ClockCallable::arity() {
 }
 // End ClockCallable
 
-// Start Function
+// Start FunctionCallable
 
 std::any FunctionCallable::call(
     [[maybe_unused]] Interpreter& interpreter,
@@ -37,8 +38,9 @@ std::any FunctionCallable::call(
         interpreter.executeBlock(m_declaration->m_body, env);
     }
     catch (const ReturnStmtStackError& returnValue){
-        return returnValue.m_value;
+        return (m_isInitialiser) ? m_closure->getAt(0, "this") : returnValue.m_value;
     }
+    if (m_isInitialiser) return m_closure->getAt(0, "this");
     return {};
 }
 
@@ -50,4 +52,13 @@ std::string FunctionCallable::str() {
     return "<function " + m_declaration->m_name.m_lexeme + ">";
 };
 
-// End Function
+std::shared_ptr<FunctionCallable> FunctionCallable::bind(LoxInstance* instance) {
+    auto env { std::shared_ptr<Environment>(m_closure) };
+    // apparently use std::enable_shared_from_this ??
+    env->define("this", std::shared_ptr<LoxInstance>(instance));
+    return std::make_shared<FunctionCallable>(
+        std::move(m_declaration), env, m_isInitialiser
+    );
+}
+
+// End FunctionCallable

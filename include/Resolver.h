@@ -23,6 +23,9 @@ public:
 	std::any visitAssignment(Assignment& assignment) override;
 	std::any visitLogical(Logical& logical) override;
 	std::any visitCall(Call& call) override;
+	std::any visitGet(Get& get) override;
+	std::any visitSet(Set& set) override;
+	std::any visitThisExpr(ThisExpr& this_) override;
     // statements
     std::any visitExpressionStmt(ExpressionStmt& stmt) override;
     std::any visitPrintStmt(PrintStmt& stmt) override;
@@ -32,12 +35,21 @@ public:
     std::any visitWhileStmt(WhileStmt& stmt) override;
     std::any visitFunctionStmt(FunctionStmt& stmt) override;
     std::any visitReturnStmt(ReturnStmt& stmt) override;
+    std::any visitClassStmt(ClassStmt& stmt) override;
     void resolve(const std::vector<std::unique_ptr<Statement>>& statements);
 private:
     enum class FunctionType {
         FUNCTION,
+        METHOD,
+        INITIALISER,
         NONE,
         MAX_FUNCTION_TYPE = NONE,
+    };
+
+    enum class ClassType {
+        CLASS,
+        NONE,
+        MAX_CLASS_TYPE = NONE,
     };
 
     void resolve(Statement* statement);
@@ -47,10 +59,11 @@ private:
     void define(Token token);
     void declare(Token token);
     void resolveLocal(Expression* expr, Token name);
-    void resolveFunction(FunctionStmt& function, FunctionType type);
+    void resolveFunction(FunctionStmt* function, FunctionType type);
 
     std::shared_ptr<Interpreter> m_interpreter;
     // vector with stack like behaviour. front is bottom, back is top of stack.
     std::vector<std::unordered_map<std::string, bool>> m_scopes {};
     FunctionType m_currentFunction { FunctionType::NONE };
+    ClassType m_currentClass { ClassType::NONE };
 };
