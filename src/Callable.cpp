@@ -38,7 +38,7 @@ std::any FunctionCallable::call(
         interpreter.executeBlock(m_declaration->m_body, env);
     }
     catch (const ReturnStmtStackError& returnValue){
-        return returnValue.m_value;
+        return (m_isInitialiser) ? m_closure->getAt(0, "this") : returnValue.m_value;
     }
     if (m_isInitialiser) return m_closure->getAt(0, "this");
     return {};
