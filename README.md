@@ -9,10 +9,12 @@ repository follows the first part of the book. This goal of this project is to g
 - [x] Variables (local, global).
 - [x] Control flow (if, while, for statements).
 - [x] Functions (recursion, closures).
-- [ ] Classes.
+- [x] Classes.
 - [ ] Inheritance.
 
 Please see `Parser.h.` for a high level understanding of the grammar in a loose high level understanding of Backus–Naur Form.
+
+See `eg/` for a possible set of invalid and valid programs.
 
 ## Requirements
 
@@ -30,7 +32,7 @@ make -C build/
 ./build/lox.out <path_to_file> # To run file
 ```
 
-### Improvements
+## Improvements
 
 - [ ] Unit testing.
 - [ ] Error message improvement.
