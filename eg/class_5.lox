@@ -1,0 +1,10 @@
+class Foo {
+  init(bar) {
+    print bar;
+    // remove to test return (not possible). unless early return
+    return;
+  }
+}
+
+var foo = Foo("hahaha !!");
+print foo;
