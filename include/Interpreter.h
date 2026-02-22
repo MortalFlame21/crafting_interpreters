@@ -11,9 +11,12 @@
 #include "Environment.h"
 #include "Callable.h"
 
+class LoxInstance;
+
 class Interpreter : public Expression::Visitor, public Statement::Visitor {
 public:
     class RuntimeError : public std::runtime_error {
+    friend class LoxInstance;
     public:
         RuntimeError(Token token, const std::string& error)
             : std::runtime_error{ error }, m_token{ token } { };
@@ -23,7 +26,7 @@ public:
 
     Interpreter()
         : m_globals { std::make_shared<Environment>() }
-        , m_environment { std::make_shared<Environment>(m_globals) } {
+        , m_environment { m_globals } {
         std::shared_ptr<Callable> clock { std::make_shared<ClockCallable>() };
         m_globals->define("clock", clock);
     }
@@ -37,6 +40,9 @@ public:
 	std::any visitAssignment(Assignment& assignment) override;
 	std::any visitLogical(Logical& logical) override;
 	std::any visitCall(Call& call) override;
+	std::any visitGet(Get& get) override;
+	std::any visitSet(Set& set) override;
+	std::any visitThisExpr(ThisExpr& this_) override;
     // statements
     std::any visitExpressionStmt(ExpressionStmt& stmt) override;
     std::any visitPrintStmt(PrintStmt& stmt) override;
@@ -46,9 +52,12 @@ public:
     std::any visitWhileStmt(WhileStmt& stmt) override;
     std::any visitFunctionStmt(FunctionStmt& stmt) override;
     std::any visitReturnStmt(ReturnStmt& stmt) override;
+    std::any visitClassStmt(ClassStmt& stmt) override;
 
-    void interpret(std::vector<std::unique_ptr<Statement>> statements);
+    void interpret(const std::vector<std::unique_ptr<Statement>>& statements);
     void execute(Statement* stmt);
+    void resolve(Expression* expr, int depth);
+    std::any lookUpVariable(Token name, Expression* expr);
     void executeBlock (
         const std::vector<std::unique_ptr<Statement>>& statements,
         std::shared_ptr<Environment> environment
@@ -65,4 +74,5 @@ private:
 
     std::shared_ptr<Environment> m_globals {};
     std::shared_ptr<Environment> m_environment {};
+    std::unordered_map<Expression*, int> m_locals {};
 };

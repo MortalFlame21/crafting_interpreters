@@ -115,6 +115,7 @@ std::unique_ptr<Expression> Parser::finishCall(std::unique_ptr<Expression> calle
 
 std::unique_ptr<Statement> Parser::declaration() {
     try {
+        if (match({ Token::Type::CLASS })) return classDeclaration();
         if (match({ Token::Type::FUN })) return function("function");
         if (match({ Token::Type::VAR })) return varDeclaration();
         return statement();
@@ -122,6 +123,24 @@ std::unique_ptr<Statement> Parser::declaration() {
         synchronise();
         return {};
     }
+}
+
+std::unique_ptr<Statement> Parser::classDeclaration() {
+    auto name { consume(Token::Type::IDENTIFIER, "Expect class name") };
+
+    consume(Token::Type::LEFT_BRACE, "Expect '{' before class body");
+    std::vector<std::unique_ptr<FunctionStmt>> methods {};
+    while (!check(Token::Type::RIGHT_BRACE) && !isAtEnd()) {
+        // super wack
+        auto func { function("method") };
+        if (auto raw { dynamic_cast<FunctionStmt*>(func.release()) })
+            methods.push_back(std::unique_ptr<FunctionStmt>(raw));
+        else
+            Errors::errors(name, "Fail to parse method");
+    }
+    consume(Token::Type::RIGHT_BRACE, "Expect '}' after class body");
+
+    return std::make_unique<ClassStmt>(name, std::move(methods));
 }
 
 std::unique_ptr<Statement> Parser::function(const std::string& kind) {
@@ -287,8 +306,10 @@ std::unique_ptr<Expression> Parser::assignment() {
 
         // so wack but idk
         if (auto* varExpr { dynamic_cast<Variable*>(expr.get()) }) {
-            auto name { varExpr->m_name };
-            return std::make_unique<Assignment>(name, std::move(value));
+            return std::make_unique<Assignment>(varExpr->m_name, std::move(value));
+        }
+        else if (auto* getExpr { dynamic_cast<Get*>(expr.get()) }) {
+            return std::make_unique<Set>(std::move(getExpr->m_object), getExpr->m_name, std::move(value));
         }
 
         error(equals, "Invalid assignment target");
@@ -418,8 +439,18 @@ std::unique_ptr<Expression> Parser::unary() {
 std::unique_ptr<Expression> Parser::call() {
     auto expr { primary() };
 
-    while (match({ Token::Type::LEFT_PAREN })) {
-        expr = finishCall(std::move(expr));
+    while (true) {
+        if (match({ Token::Type::LEFT_PAREN })) {
+            expr = finishCall(std::move(expr));
+        }
+        else if (match({ Token::Type::DOT })) {
+            auto name { consume(Token::Type::IDENTIFIER,
+                "Expect property name after '.'") };
+            expr = std::make_unique<Get>(std::move(expr), name);
+        }
+        else {
+            break;
+        }
     }
 
     return expr;
@@ -437,6 +468,10 @@ std::unique_ptr<Expression> Parser::primary() {
         auto expr { expression() };
         consume(Token::Type::RIGHT_PAREN, "Expect ')' after <expression>.");
         return std::make_unique<Grouping>(std::move(expr));
+    }
+
+    if (match({ Token::Type::THIS })) {
+        return std::make_unique<ThisExpr>(previous());
     }
 
     if (match({ Token::Type::IDENTIFIER }))

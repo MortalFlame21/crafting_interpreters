@@ -1,0 +1,9 @@
+class Person {}
+var p = Person();
+
+p.fname = "John";
+p.lname = "Doe";
+
+print p;
+print p.fname;
+print p.lname;

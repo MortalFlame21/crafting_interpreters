@@ -14,6 +14,9 @@ class Variable;
 class Assignment;
 class Logical;
 class Call;
+class Get;
+class Set;
+class ThisExpr;
 
 class Expression {
 public:
@@ -33,6 +36,9 @@ public:
         virtual std::any visitAssignment(Assignment& Assignment) = 0;
         virtual std::any visitLogical(Logical& logical) = 0;
         virtual std::any visitCall(Call& call) = 0;
+        virtual std::any visitGet(Get& get) = 0;
+        virtual std::any visitSet(Set& set) = 0;
+        virtual std::any visitThisExpr(ThisExpr& this_) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -61,6 +67,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_left;
     std::unique_ptr<Expression> m_right;
@@ -81,6 +88,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_expression;
 };
@@ -116,6 +124,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_right;
     Token m_operator;
@@ -136,6 +145,7 @@ public:
     friend class AstPrinter;
     friend class Interpreter;
     friend class Parser;
+    friend class Resolver;
 private:
     Token m_name;
 };
@@ -154,6 +164,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     Token m_name;
     std::unique_ptr<Expression> m_value;
@@ -179,6 +190,7 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_left;
     std::unique_ptr<Expression> m_right;
@@ -205,8 +217,77 @@ public:
 
     friend class AstPrinter;
     friend class Interpreter;
+    friend class Resolver;
 private:
     std::unique_ptr<Expression> m_callee;
     Token m_parenthesis;
     std::vector<std::unique_ptr<Expression>> m_arguments;
+};
+
+class Get : public Expression {
+public:
+    Get (
+        std::unique_ptr<Expression> object,
+        Token name
+    )
+        : m_object{ std::move(object) }
+        , m_name{ name }
+    { }
+
+    virtual ~Get() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitGet(*this);
+    }
+
+    friend class Parser;
+    friend class Interpreter;
+    friend class Resolver;
+private:
+    std::unique_ptr<Expression> m_object;
+    Token m_name;
+};
+
+class Set : public Expression {
+public:
+    Set (
+        std::unique_ptr<Expression> object,
+        Token name,
+        std::unique_ptr<Expression> value
+    )
+        : m_object{ std::move(object) }
+        , m_name{ name }
+        , m_value{ std::move(value) }
+    { }
+
+    virtual ~Set() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitSet(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+    friend class Resolver;
+private:
+    std::unique_ptr<Expression> m_object;
+    Token m_name;
+    std::unique_ptr<Expression> m_value;
+};
+
+class ThisExpr : public Expression {
+public:
+    ThisExpr (Token keyword) : m_keyword{ keyword } { }
+
+    virtual ~ThisExpr() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitThisExpr(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+    friend class Resolver;
+private:
+    Token m_keyword;
 };
