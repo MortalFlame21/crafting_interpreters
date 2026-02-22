@@ -330,7 +330,8 @@ std::any Interpreter::visitFunctionStmt(FunctionStmt& stmt) {
     auto name { stmt.m_name.m_lexeme };
     std::shared_ptr<Callable> func { std::make_shared<FunctionCallable> (
         std::make_unique<FunctionStmt>(std::move(stmt)),
-        m_environment
+        m_environment,
+        false
     )};
     m_environment->define(name, func);
     return {};
@@ -347,7 +348,9 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
     std::unordered_map<std::string, std::shared_ptr<FunctionCallable>> methods {};
     for (auto& m : stmt.m_methods) {
         auto name { m->m_name.m_lexeme };
-        auto func { std::make_shared<FunctionCallable>(std::move(m), m_environment) };
+        auto func { std::make_shared<FunctionCallable>(
+            std::move(m), m_environment, (m->m_name.m_lexeme == "init")
+        ) };
         methods.insert_or_assign(name, func);
     }
 
