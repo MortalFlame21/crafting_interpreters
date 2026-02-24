@@ -146,7 +146,7 @@ std::unique_ptr<Statement> Parser::classDeclaration() {
     }
     consume(Token::Type::RIGHT_BRACE, "Expect '}' after class body");
 
-    return std::make_unique<ClassStmt>(name, superclass, std::move(methods));
+    return std::make_unique<ClassStmt>(name, std::move(superclass), std::move(methods));
 }
 
 std::unique_ptr<Statement> Parser::function(const std::string& kind) {
