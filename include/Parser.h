@@ -6,7 +6,8 @@ the grammar
 program           -> <declaration>;
 declaration       -> <class_declaration> | <fun_declaration>
                         | <var_declaration> | <statement>;
-class_declaration -> "class" <IDENTIFIER> "{" <function> "}";
+class_declaration -> "class" <IDENTIFIER> "<" <IDENTIFIER>
+                        "{" <function> "}";
 fun_declaration   -> "fun" <function>;
 function          -> <IDENTIFIER> "(" <parameters> ")"
                         <block_stmt>;
