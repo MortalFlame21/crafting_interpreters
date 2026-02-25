@@ -23,7 +23,9 @@ std::string LoxClass::str() {
 }
 
 std::shared_ptr<FunctionCallable> LoxClass::findMethod(std::string name) {
-    return (m_methods.find(name) != m_methods.end()) ? m_methods.find(name)->second : nullptr;
+    if (m_methods.find(name) != m_methods.end()) return m_methods.find(name)->second;
+    else if (m_superclass) return m_superclass->findMethod(name);
+    return nullptr;
 }
 
 // LoxInstance
