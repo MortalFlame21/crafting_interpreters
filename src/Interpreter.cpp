@@ -345,7 +345,7 @@ std::any Interpreter::visitReturnStmt(ReturnStmt& stmt) {
 std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
     std::any superclass { (stmt.m_superclass) ?
         evaluate(stmt.m_superclass.get()) : nullptr };
-    if (superclass.has_value() && superclass.type() != typeid(std::shared_ptr<LoxClass>))
+    if (stmt.m_superclass && superclass.type() != typeid(std::shared_ptr<LoxClass>))
         throw RuntimeError(stmt.m_superclass->m_name, "Superclass must be a class");
 
     m_environment->define(stmt.m_name.m_lexeme, {});
@@ -361,7 +361,7 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
 
     auto class_ { std::make_shared<LoxClass>(
         stmt.m_name.m_lexeme,
-        (superclass.has_value()) ?
+        (stmt.m_superclass) ?
             std::any_cast<std::shared_ptr<LoxClass>>(superclass) : nullptr,
         methods
     ) };
