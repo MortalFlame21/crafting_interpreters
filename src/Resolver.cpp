@@ -203,8 +203,7 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
 
-    const auto hasSameName { (stmt.m_name.m_lexeme == stmt.m_superclass->m_name.m_lexeme) };
-    if (stmt.m_superclass && hasSameName)
+    if (stmt.m_superclass && stmt.m_name.m_lexeme == stmt.m_superclass->m_name.m_lexeme)
         Errors::errors(stmt.m_superclass->m_name, "A class can't inherit itself");
 
     if (stmt.m_superclass)
