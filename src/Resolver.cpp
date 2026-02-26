@@ -209,6 +209,11 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     if (stmt.m_superclass)
         resolve(stmt.m_superclass.get());
 
+    if (stmt.m_superclass) {
+        beginScope();
+        m_scopes.back().insert_or_assign("super", true);
+    }
+
     beginScope();
     m_scopes.back().insert_or_assign("this", true);
 
@@ -219,6 +224,14 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     }
 
     endScope();
+
+    if (stmt.m_superclass) endScope();
+
     m_currentClass = enclosingClass;
+    return {};
+}
+
+std::any Resolver::visitSuper(Super& super) {
+    resolveLocal(&super, super.m_keyword);
     return {};
 }
