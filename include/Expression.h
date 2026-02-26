@@ -17,6 +17,7 @@ class Call;
 class Get;
 class Set;
 class ThisExpr;
+class Super;
 
 class Expression {
 public:
@@ -39,6 +40,7 @@ public:
         virtual std::any visitGet(Get& get) = 0;
         virtual std::any visitSet(Set& set) = 0;
         virtual std::any visitThisExpr(ThisExpr& this_) = 0;
+        virtual std::any visitSuper(Super& super) = 0;
     };
 
     virtual std::any accept(Visitor& visitor) = 0;
@@ -290,4 +292,23 @@ public:
     friend class Resolver;
 private:
     Token m_keyword;
+};
+
+class Super : public Expression {
+public:
+    Super (Token keyword, Token method)
+        : m_keyword{ keyword }, m_method{ method } { }
+
+    virtual ~Super() { };
+
+    std::any accept(Visitor& visitor) override {
+        return visitor.visitSuper(*this);
+    }
+
+    friend class AstPrinter;
+    friend class Interpreter;
+    friend class Resolver;
+private:
+    Token m_keyword;
+    Token m_method;
 };

@@ -42,7 +42,8 @@ call              -> <primary> "(" <arguments> ")"
 primary           -> <NUMBER> | <STRING>
                         | "true" | "false" | "nil"
                         | "(" <expression> ")"
-                        | <IDENTIFIER>;
+                        | <IDENTIFIER>
+                        | "super" "." <IDENTIFIER>;
 arguments         -> <expression> "," <expression>;
 */
 
