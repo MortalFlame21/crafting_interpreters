@@ -470,6 +470,14 @@ std::unique_ptr<Expression> Parser::primary() {
     if (match({ Token::Type::NUMBER, Token::Type::STRING }))
         return std::make_unique<Literal>(previous().m_literal);
 
+    if (match({ Token::Type::SUPER })) {
+        auto keyword { previous() };
+        consume(Token::Type::DOT, "Expect '.' after 'super'");
+        auto method { consume(Token::Type::IDENTIFIER,
+            "Expect superclass method name.") };
+        return std::make_unique<Super>(keyword, method);
+    }
+
     if (match({ Token::Type::LEFT_PAREN })) {
         auto expr { expression() };
         consume(Token::Type::RIGHT_PAREN, "Expect ')' after <expression>.");
