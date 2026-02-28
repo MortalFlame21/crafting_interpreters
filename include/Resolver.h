@@ -49,6 +49,7 @@ private:
 
     enum class ClassType {
         CLASS,
+        SUBCLASS,
         NONE,
         MAX_CLASS_TYPE = NONE,
     };

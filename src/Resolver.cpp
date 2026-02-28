@@ -206,8 +206,10 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     if (stmt.m_superclass && stmt.m_name.m_lexeme == stmt.m_superclass->m_name.m_lexeme)
         Errors::errors(stmt.m_superclass->m_name, "A class can't inherit itself");
 
-    if (stmt.m_superclass)
+    if (stmt.m_superclass) {
         resolve(stmt.m_superclass.get());
+        m_currentClass = ClassType::SUBCLASS;
+    }
 
     if (stmt.m_superclass) {
         beginScope();
@@ -232,6 +234,10 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
 }
 
 std::any Resolver::visitSuper(Super& super) {
+    if (m_currentClass == ClassType::NONE)
+        Errors::errors(super.m_keyword, "Can't use 'super' outside of a class.");
+    else if (m_currentClass == ClassType::CLASS)
+        Errors::errors(super.m_keyword, "Can't use 'super' in a class with no superclass.");
     resolveLocal(&super, super.m_keyword);
     return {};
 }
