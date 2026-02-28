@@ -40,12 +40,12 @@ private:
     std::unordered_map<std::string, std::shared_ptr<FunctionCallable>> m_methods;
 };
 
-class LoxInstance {
+
+class LoxInstance : public std::enable_shared_from_this<LoxInstance> {
 public:
     LoxInstance(LoxClass* class_)
         : m_class { class_ } { }
-
-    virtual ~LoxInstance() { };
+    ~LoxInstance() { };
 
     // explicitly define the move ctor and move assignment ctor.
     LoxInstance(LoxInstance&) = default;
