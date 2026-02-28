@@ -359,7 +359,7 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
     for (auto& m : stmt.m_methods) {
         auto name { m->m_name.m_lexeme };
         auto func { std::make_shared<FunctionCallable>(
-            std::move(m), m_environment, (m->m_name.m_lexeme == "init")
+            std::move(m), m_environment, (name == "init")
         ) };
         methods.insert_or_assign(name, func);
     }
@@ -416,5 +416,5 @@ std::any Interpreter::visitSuper(Super& super) {
         throw RuntimeError(super.m_method,
             "Undefined property '" + super.m_method.m_lexeme + "'.");
 
-    return method->bind(object.get());
+    return method->bind(object);
 }
