@@ -121,7 +121,7 @@ std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
     if (m_currentFunction == FunctionType::NONE)
         Errors::errors(stmt.m_keyword, "Can't return from top-level code.");
-    else if (m_currentFunction == FunctionType::INITIALISER)
+    else if (stmt.m_value && m_currentFunction == FunctionType::INITIALISER)
         Errors::errors(stmt.m_keyword, "Can't return from initialiser.");
     else if (stmt.m_value)
         resolve(stmt.m_value.get());
