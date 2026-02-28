@@ -1,0 +1,9 @@
+class Eclair {
+  cook() {
+    super.cook();
+    print "Pipe full of creme patissiere.";
+  }
+}
+
+// super can't work without super class or outside of class
+Eclair.cook();
