@@ -227,9 +227,11 @@ class ClassStmt : public Statement {
 public:
     ClassStmt (
         Token name,
+        std::unique_ptr<Variable> superclass,
         std::vector<std::unique_ptr<FunctionStmt>> methods
     )
         : m_name{ name }
+        , m_superclass{ std::move(superclass) }
         , m_methods{ std::move(methods) }
     { }
 
@@ -244,5 +246,6 @@ public:
     friend class Resolver;
 private:
     Token m_name;
+    std::unique_ptr<Variable> m_superclass;
     std::vector<std::unique_ptr<FunctionStmt>> m_methods {};
 };

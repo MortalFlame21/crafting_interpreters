@@ -7,7 +7,7 @@ std::any LoxClass::call (
 ) {
     auto instance { std::make_shared<LoxInstance>(this) };
     if (auto init { findMethod("init") }; init)
-        init->bind(instance.get())->call(interpreter, args);
+        init->bind(instance)->call(interpreter, args);
     return instance;
 }
 
@@ -23,7 +23,9 @@ std::string LoxClass::str() {
 }
 
 std::shared_ptr<FunctionCallable> LoxClass::findMethod(std::string name) {
-    return (m_methods.find(name) != m_methods.end()) ? m_methods.find(name)->second : nullptr;
+    if (m_methods.find(name) != m_methods.end()) return m_methods.find(name)->second;
+    else if (m_superclass) return m_superclass->findMethod(name);
+    return nullptr;
 }
 
 // LoxInstance
@@ -34,7 +36,7 @@ std::any LoxInstance::get(Token name) {
     // apparently make LoxInstance use std::enable_shared_from_this ??
     // https://stackoverflow.com/questions/11711034/stdshared-ptr-of-this
     if (auto method { m_class->findMethod(name.m_lexeme) }; method)
-        return method->bind(this);
+        return method->bind(shared_from_this());
 
     throw Interpreter::RuntimeError(name, "Undefined property " + name.m_lexeme);
 }

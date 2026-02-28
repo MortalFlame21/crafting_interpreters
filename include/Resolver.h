@@ -26,6 +26,7 @@ public:
 	std::any visitGet(Get& get) override;
 	std::any visitSet(Set& set) override;
 	std::any visitThisExpr(ThisExpr& this_) override;
+	std::any visitSuper(Super& super) override;
     // statements
     std::any visitExpressionStmt(ExpressionStmt& stmt) override;
     std::any visitPrintStmt(PrintStmt& stmt) override;
@@ -48,6 +49,7 @@ private:
 
     enum class ClassType {
         CLASS,
+        SUBCLASS,
         NONE,
         MAX_CLASS_TYPE = NONE,
     };

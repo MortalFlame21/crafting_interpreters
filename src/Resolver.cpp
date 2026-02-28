@@ -121,7 +121,7 @@ std::any Resolver::visitFunctionStmt(FunctionStmt& stmt) {
 std::any Resolver::visitReturnStmt(ReturnStmt& stmt) {
     if (m_currentFunction == FunctionType::NONE)
         Errors::errors(stmt.m_keyword, "Can't return from top-level code.");
-    else if (m_currentFunction == FunctionType::INITIALISER)
+    else if (stmt.m_value && m_currentFunction == FunctionType::INITIALISER)
         Errors::errors(stmt.m_keyword, "Can't return from initialiser.");
     else if (stmt.m_value)
         resolve(stmt.m_value.get());
@@ -203,6 +203,19 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     declare(stmt.m_name);
     define(stmt.m_name);
 
+    if (stmt.m_superclass && stmt.m_name.m_lexeme == stmt.m_superclass->m_name.m_lexeme)
+        Errors::errors(stmt.m_superclass->m_name, "A class can't inherit itself");
+
+    if (stmt.m_superclass) {
+        resolve(stmt.m_superclass.get());
+        m_currentClass = ClassType::SUBCLASS;
+    }
+
+    if (stmt.m_superclass) {
+        beginScope();
+        m_scopes.back().insert_or_assign("super", true);
+    }
+
     beginScope();
     m_scopes.back().insert_or_assign("this", true);
 
@@ -213,6 +226,18 @@ std::any Resolver::visitClassStmt(ClassStmt& stmt) {
     }
 
     endScope();
+
+    if (stmt.m_superclass) endScope();
+
     m_currentClass = enclosingClass;
+    return {};
+}
+
+std::any Resolver::visitSuper(Super& super) {
+    if (m_currentClass == ClassType::NONE)
+        Errors::errors(super.m_keyword, "Can't use 'super' outside of a class.");
+    else if (m_currentClass == ClassType::CLASS)
+        Errors::errors(super.m_keyword, "Can't use 'super' in a class with no superclass.");
+    resolveLocal(&super, super.m_keyword);
     return {};
 }

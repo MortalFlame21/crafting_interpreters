@@ -13,8 +13,10 @@ class LoxInstance;
 class LoxClass : public Callable {
 public:
     LoxClass(std::string name,
+        std::shared_ptr<LoxClass> superclass,
         std::unordered_map<std::string, std::shared_ptr<FunctionCallable>>& methods)
         : m_name { name }
+        , m_superclass { superclass }
         , m_methods { methods }
     { }
 
@@ -34,15 +36,16 @@ public:
     friend class LoxInstance;
 private:
     std::string m_name;
+    std::shared_ptr<LoxClass> m_superclass;
     std::unordered_map<std::string, std::shared_ptr<FunctionCallable>> m_methods;
 };
 
-class LoxInstance {
+
+class LoxInstance : public std::enable_shared_from_this<LoxInstance> {
 public:
     LoxInstance(LoxClass* class_)
         : m_class { class_ } { }
-
-    virtual ~LoxInstance() { };
+    ~LoxInstance() { };
 
     // explicitly define the move ctor and move assignment ctor.
     LoxInstance(LoxInstance&) = default;
