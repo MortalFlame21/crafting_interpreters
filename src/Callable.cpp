@@ -52,10 +52,10 @@ std::string FunctionCallable::str() {
     return "<function " + m_declaration->m_name.m_lexeme + ">";
 };
 
-std::shared_ptr<FunctionCallable> FunctionCallable::bind(LoxInstance* instance) {
-    auto env { std::shared_ptr<Environment>(m_closure) };
+std::shared_ptr<FunctionCallable> FunctionCallable::bind(std::shared_ptr<LoxInstance> instance) {
+    auto env { std::make_shared<Environment>(m_closure) };
     // apparently use std::enable_shared_from_this ??
-    env->define("this", std::shared_ptr<LoxInstance>(instance));
+    env->define("this", instance);
     return std::make_shared<FunctionCallable>(
         std::move(m_declaration), env, m_isInitialiser
     );

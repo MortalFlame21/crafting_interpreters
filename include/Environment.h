@@ -21,6 +21,8 @@ public:
     void assignAt(int distance, Token name, std::any& value);
     Environment* ancestor(int distance);
     void assign(Token name, const std::any& value);
+
+    friend class Interpreter;
 private:
     std::unordered_map<std::string, std::any> m_values {};
     std::shared_ptr<Environment> m_enclosing {};

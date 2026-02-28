@@ -9,10 +9,12 @@ repository follows the first part of the book. This goal of this project is to g
 - [x] Variables (local, global).
 - [x] Control flow (if, while, for statements).
 - [x] Functions (recursion, closures).
-- [ ] Classes.
-- [ ] Inheritance.
+- [x] Classes.
+- [x] Inheritance.
 
-Please see `Parser.h.` for a high level understanding of the grammar in a loose high level understanding of Backus–Naur Form.
+Please see `Parser.h.` for a high level understanding of the grammar in a loose high level understanding of Backus–Naur Form. Otherwise, for more comprehensive information, please see Lox Languages docs [\[1\]](https://craftinginterpreters.com/appendix-i.html), [\[2\]](https://craftinginterpreters.com/the-lox-language.html).
+
+See `eg/` for a possible set of invalid and valid programs.
 
 ## Requirements
 
@@ -22,15 +24,15 @@ Please see `Parser.h.` for a high level understanding of the grammar in a loose 
 ## Usage
 
 ```
-cmake -B .
+cmake -S .
 
-make -C build/
+make
 
-./build/lox.out # To run the REPL
-./build/lox.out <path_to_file> # To run file
+.lox.out # To run the REPL
+.lox.out <path_to_file> # To run file
 ```
 
-### Improvements
+## Improvements
 
 - [ ] Unit testing.
 - [ ] Error message improvement.

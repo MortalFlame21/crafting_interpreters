@@ -343,18 +343,36 @@ std::any Interpreter::visitReturnStmt(ReturnStmt& stmt) {
 }
 
 std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
+    std::any superclass { (stmt.m_superclass) ?
+        evaluate(stmt.m_superclass.get()) : nullptr };
+    if (stmt.m_superclass && superclass.type() != typeid(std::shared_ptr<LoxClass>))
+        throw RuntimeError(stmt.m_superclass->m_name, "Superclass must be a class");
+
     m_environment->define(stmt.m_name.m_lexeme, {});
+
+    if (stmt.m_superclass) {
+        m_environment = std::make_shared<Environment>(m_environment);
+        m_environment->define("super", superclass);
+    }
 
     std::unordered_map<std::string, std::shared_ptr<FunctionCallable>> methods {};
     for (auto& m : stmt.m_methods) {
         auto name { m->m_name.m_lexeme };
         auto func { std::make_shared<FunctionCallable>(
-            std::move(m), m_environment, (m->m_name.m_lexeme == "init")
+            std::move(m), m_environment, (name == "init")
         ) };
         methods.insert_or_assign(name, func);
     }
 
-    auto class_ { std::make_shared<LoxClass>(stmt.m_name.m_lexeme, methods) };
+    auto class_ { std::make_shared<LoxClass>(
+        stmt.m_name.m_lexeme,
+        (stmt.m_superclass) ?
+            std::any_cast<std::shared_ptr<LoxClass>>(superclass) : nullptr,
+        methods
+    ) };
+
+    if (stmt.m_superclass) m_environment = m_environment->m_enclosing;
+
     m_environment->assign(stmt.m_name, class_);
     return {};
 }
@@ -379,4 +397,23 @@ std::any Interpreter::visitSet(Set& set) {
 
 std::any Interpreter::visitThisExpr(ThisExpr& this_) {
     return lookUpVariable(this_.m_keyword, &this_);
+}
+
+std::any Interpreter::visitSuper(Super& super) {
+    auto dist { m_locals.find(&super) };
+    if (dist == m_locals.end())
+        throw RuntimeError(super.m_method, "super not found.");
+
+    auto superclass { std::any_cast<std::shared_ptr<LoxClass>>(
+        m_environment->getAt(dist->second, "super")) };
+    auto object { std::any_cast<std::shared_ptr<LoxInstance>>(
+        m_environment->getAt(dist->second - 1, "this")) };
+
+    auto method { superclass->findMethod(super.m_method.m_lexeme) };
+
+    if (!method)
+        throw RuntimeError(super.m_method,
+            "Undefined property '" + super.m_method.m_lexeme + "'.");
+
+    return method->bind(object);
 }
