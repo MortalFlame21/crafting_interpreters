@@ -400,7 +400,6 @@ std::any Interpreter::visitThisExpr(ThisExpr& this_) {
 }
 
 std::any Interpreter::visitSuper(Super& super) {
-    std::cout << "visitSuper\n";
     auto dist { m_locals.find(&super) };
     if (dist == m_locals.end())
         throw RuntimeError(super.m_method, "super not found.");
