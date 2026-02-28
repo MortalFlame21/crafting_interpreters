@@ -350,6 +350,11 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
 
     m_environment->define(stmt.m_name.m_lexeme, {});
 
+    if (stmt.m_superclass) {
+        m_environment = std::make_shared<Environment>(m_environment);
+        m_environment->define("super", superclass);
+    }
+
     std::unordered_map<std::string, std::shared_ptr<FunctionCallable>> methods {};
     for (auto& m : stmt.m_methods) {
         auto name { m->m_name.m_lexeme };
@@ -365,6 +370,9 @@ std::any Interpreter::visitClassStmt(ClassStmt& stmt) {
             std::any_cast<std::shared_ptr<LoxClass>>(superclass) : nullptr,
         methods
     ) };
+
+    if (stmt.m_superclass) m_environment = m_environment->m_enclosing;
+
     m_environment->assign(stmt.m_name, class_);
     return {};
 }
@@ -389,4 +397,24 @@ std::any Interpreter::visitSet(Set& set) {
 
 std::any Interpreter::visitThisExpr(ThisExpr& this_) {
     return lookUpVariable(this_.m_keyword, &this_);
+}
+
+std::any Interpreter::visitSuper(Super& super) {
+    std::cout << "visitSuper\n";
+    auto dist { m_locals.find(&super) };
+    if (dist == m_locals.end())
+        throw RuntimeError(super.m_method, "super not found.");
+
+    auto superclass { std::any_cast<std::shared_ptr<LoxClass>>(
+        m_environment->getAt(dist->second, "super")) };
+    auto object { std::any_cast<std::shared_ptr<LoxInstance>>(
+        m_environment->getAt(dist->second - 1, "this")) };
+
+    auto method { superclass->findMethod(super.m_method.m_lexeme) };
+
+    if (!method)
+        throw RuntimeError(super.m_method,
+            "Undefined property '" + super.m_method.m_lexeme + "'.");
+
+    return method->bind(object.get());
 }
